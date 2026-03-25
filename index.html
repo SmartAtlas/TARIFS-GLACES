@@ -31,22 +31,24 @@
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
             
-            /* Cartes compactes avec couleurs froides alternées */
-            tr { border-radius: 0.75rem; padding: 0.15rem 0; margin-bottom: 0.4rem; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
-            tr:nth-child(odd) { background-color: #ffffff; border: 1px solid #f1f5f9; }
-            tr:nth-child(even) { background-color: #f0f9ff; border: 1px solid #e0f2fe; } /* Bleu glacier clair et froid */
-            
+            /* Cartes compactes avec bordure gauche colorée */
+            tr { border-radius: 0.6rem; padding: 0.1rem 0; margin-bottom: 0.35rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); background: #fff; border: 1px solid #e2e8f0; border-left-width: 4px; }
+
             /* Lignes internes serrées */
-            td { border: none !important; position: relative; padding-left: 45% !important; padding-top: 0.35rem !important; padding-bottom: 0.35rem !important; text-align: right !important; min-height: 28px; font-size: 0.8rem; border-bottom: 1px solid rgba(0, 0, 0, 0.02) !important; }
+            td { border: none !important; position: relative; padding-left: 42% !important; padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; text-align: right !important; min-height: 24px; font-size: 0.75rem; border-bottom: 1px solid rgba(0,0,0,0.03) !important; }
             td:last-child { border-bottom: none !important; }
-            td:before { content: attr(data-label); position: absolute; left: 0.75rem; width: 40%; font-weight: 800; text-align: left; font-size: 0.6rem; color: #4338ca; text-transform: uppercase; top: 50%; transform: translateY(-50%); }
+            td:before { content: attr(data-label); position: absolute; left: 0.6rem; width: 38%; font-weight: 800; text-align: left; font-size: 0.58rem; color: #4338ca; text-transform: uppercase; top: 50%; transform: translateY(-50%); }
+            
+            /* Filtres ultra-compacts sur mobile */
+            .filter-mobile { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+            .filter-mobile .filter-full { grid-column: 1 / -1; }
+            .filter-mobile select, .filter-mobile input { padding: 0.4rem 0.6rem !important; font-size: 0.72rem !important; border-radius: 0.6rem !important; }
+            .filter-mobile label { font-size: 0.55rem !important; }
             
             #adminButtons { flex-direction: column; width: 100%; }
             #adminButtons button, .btn-action { width: 100%; margin-bottom: 0.4rem;}
-            .watermark-text { font-size: 80px !important; }
             #propsModal > div, #modal > div { max-width: 95% !important; margin: auto; border-radius: 1.25rem; max-height: 90vh; overflow-y: auto; }
             #loginScreen > div { max-width: 92%; padding: 1.5rem; }
-            .filter-grid { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -137,38 +139,64 @@
         </div>
 
         <!-- Filters -->
-        <div class="glass-card p-5 lg:p-6 grid grid-cols-1 md:grid-cols-12 gap-5 items-end bg-white/60">
-            <div class="col-span-1 md:col-span-3 space-y-2">
-                <label class="text-[10px] font-black text-slate-500 uppercase flex items-center gap-1.5 ml-1"><svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Recherche</label>
-                <div class="relative">
-                    <input type="text" id="search" oninput="filterData()" placeholder="Modèle, véhicule..." class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold placeholder-slate-400 outline-none text-slate-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
+        <div class="glass-card p-4 md:p-5 lg:p-6 bg-white/60">
+
+            <!-- ═══ PC : ligne horizontale ═══ -->
+            <div class="hidden md:flex md:flex-row gap-3 items-end">
+                <div class="flex-1 space-y-1">
+                    <label class="text-[8px] font-black text-slate-500 uppercase flex items-center gap-1 ml-1">
+                        <svg class="w-2.5 h-2.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Recherche
+                    </label>
+                    <input type="text" id="search" oninput="filterData()" placeholder="Modèle, véhicule, châssis..." class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-[10px] font-bold placeholder-slate-400 outline-none text-slate-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
+                </div>
+                <div class="w-40 space-y-1">
+                    <label class="text-[8px] font-black text-slate-500 uppercase ml-1">Type de Glace</label>
+                    <select id="typeFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
+                        <option value="ALL">TOUS LES TYPES</option>
+                    </select>
+                </div>
+                <div class="w-40 space-y-1">
+                    <label class="text-[8px] font-black text-slate-500 uppercase ml-1">Constructeur</label>
+                    <select id="brandFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
+                        <option value="ALL">TOUTES MARQUES</option>
+                    </select>
+                </div>
+                <div class="w-40 space-y-1">
+                    <label class="text-[8px] font-black text-slate-500 uppercase ml-1">Catégorie BRIS</label>
+                    <select id="categorieFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
+                        <option value="ALL">TOUTES CATÉGORIES</option>
+                        <option value="ORIGINE">ORIGINE</option>
+                        <option value="ADAPTABLE">ADAPTABLE</option>
+                    </select>
+                </div>
+                <div class="w-28 shrink-0">
+                    <div class="bg-gradient-to-br from-indigo-50 to-blue-50 h-[34px] rounded-lg flex items-center justify-center border border-indigo-100/60 shadow-inner">
+                        <span id="countLabel" class="text-[9px] font-black tracking-widest text-indigo-700 uppercase">0 RÉSULTATS</span>
+                    </div>
                 </div>
             </div>
-            <div class="col-span-1 md:col-span-2 space-y-2">
-                <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Type de Glace</label>
-                <select id="typeFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
-                    <option value="ALL">TOUS LES TYPES</option>
-                </select>
-            </div>
-            <div class="col-span-1 md:col-span-2 space-y-2">
-                <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Constructeur</label>
-                <select id="brandFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
-                    <option value="ALL">TOUTES MARQUES</option>
-                </select>
-            </div>
-            <div class="col-span-1 md:col-span-3 space-y-2">
-                <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Catégorie BDG</label>
-                <select id="categorieFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
-                    <option value="ALL">TOUTES CATÉGORIES</option>
-                    <option value="ORIGINE">ORIGINE</option>
-                    <option value="ADAPTABLE">ADAPTABLE</option>
-                </select>
-            </div>
-            <div class="col-span-1 md:col-span-2">
-                <div class="bg-gradient-to-br from-indigo-50 to-blue-50 text-indigo-700 h-[46px] rounded-xl flex items-center justify-center border border-indigo-100/60 shadow-inner">
-                    <span id="countLabel" class="text-[11px] font-black tracking-widest text-indigo-700">0 RÉSULTATS</span>
+
+            <!-- ═══ MOBILE : grille 2×2 compacte ═══ -->
+            <div class="md:hidden space-y-2">
+                <input type="text" id="search_m" oninput="document.getElementById('search').value=this.value;filterData()" placeholder="🔍 Modèle, marque, châssis..." class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold placeholder-slate-400 outline-none focus:border-blue-400">
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="typeFilter_m" onchange="document.getElementById('typeFilter').value=this.value;filterData()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                        <option value="ALL">TYPE: TOUS</option>
+                    </select>
+                    <select id="brandFilter_m" onchange="document.getElementById('brandFilter').value=this.value;filterData()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                        <option value="ALL">MARQUE: TOUTES</option>
+                    </select>
+                    <select id="categorieFilter_m" onchange="document.getElementById('categorieFilter').value=this.value;filterData()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                        <option value="ALL">CATÉG BRIS: TOUTES</option>
+                        <option value="ORIGINE">ORIGINE</option>
+                        <option value="ADAPTABLE">ADAPTABLE</option>
+                    </select>
+                    <div class="bg-indigo-50 rounded-lg flex items-center justify-center border border-indigo-100">
+                        <span id="countLabel" class="text-[11px] font-black text-indigo-700">0 RÉSULTATS</span>
+                    </div>
                 </div>
             </div>
+
         </div>
 
         <!-- Table -->
@@ -258,17 +286,25 @@
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Type de Glace</label>
                         <select id="m_type" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
-                            <option value="PARE-BRISE">PARE-BRISE</option>
-                            <option value="LUNETTE ARRIÈRE">LUNETTE ARRIÈRE</option>
-                            <option value="CUSTODE">CUSTODE</option>
-                            <option value="VITRE A.D">VITRE A.D</option>
-                            <option value="VITRE A.G">VITRE A.G</option>
-                            <option value="VITRE AR.D">VITRE AR.D</option>
-                            <option value="VITRE AR.G">VITRE AR.G</option>
+                            <optgroup label="BRIS (Bris de Glace)">
+                                <option value="PARE-BRISE">PARE-BRISE</option>
+                                <option value="LUNETTE ARRIÈRE">LUNETTE ARRIÈRE</option>
+                                <option value="CUSTODE">CUSTODE</option>
+                                <option value="VITRE A.D">VITRE A.D</option>
+                                <option value="VITRE A.G">VITRE A.G</option>
+                                <option value="VITRE AR.D">VITRE AR.D</option>
+                                <option value="VITRE AR.G">VITRE AR.G</option>
+                                <option value="LATÉRAL">LATÉRAL</option>
+                            </optgroup>
+                            <optgroup label="OPTIQUES & ACCESSOIRES">
+                                <option value="OPTIQUE">OPTIQUE</option>
+                                <option value="FEU ROUGE ARRIÈRE">FEU ROUGE ARRIÈRE</option>
+                                <option value="GLACE RÉTROVISEUR">GLACE RÉTROVISEUR</option>
+                            </optgroup>
                         </select>
                     </div>
                     <div class="space-y-1">
-                        <label class="text-[10px] font-black text-indigo-600 uppercase">Catégorie BDG</label>
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Catégorie BRIS</label>
                         <select id="m_categorie" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                             <option value="">(Non spécifié)</option>
                             <option value="ORIGINE">ORIGINE</option>
@@ -610,11 +646,33 @@
             const types = [...new Set(data.map(i => i.type))].sort();
             const brands = [...new Set(data.map(i => i.marque))].sort();
             
-            document.getElementById('typeFilter').innerHTML = '<option value="ALL">TOUS LES TYPES</option>' + 
-                types.map(t => `<option value="${t}">${t.toUpperCase()}</option>`).join('');
+            // Séparation en branches pour le Type de Glace
+            const bdgTypes = ["PARE-BRISE", "LUNETTE ARRI\u00c8RE", "CUSTODE", "VITRE A.D", "VITRE A.G", "VITRE AR.D", "VITRE AR.G", "LAT\u00c9RAL"];
+            const optiqueTypes = ["OPTIQUE", "FEU ROUGE ARRI\u00c8RE", "GLACE R\u00c9TROVISEUR"];
             
-            document.getElementById('brandFilter').innerHTML = '<option value="ALL">TOUTES LES MARQUES</option>' + 
-                brands.map(b => `<option value="${b}">${b}</option>`).join('');
+            const gBDG = types.filter(t => bdgTypes.includes(t.toUpperCase()));
+            const gOPT = types.filter(t => optiqueTypes.includes(t.toUpperCase()));
+            const gAUT = types.filter(t => !bdgTypes.includes(t.toUpperCase()) && !optiqueTypes.includes(t.toUpperCase()));
+
+            const makeTypeOptions = (allLabel) => {
+                let html = `<option value="ALL">${allLabel}</option>`;
+                html += `<optgroup label="BRIS (Bris de Glace)">${bdgTypes.map(t => `<option value="${t}">${t}</option>`).join('')}</optgroup>`;
+                html += `<optgroup label="OPTIQUES & ACCESSOIRES">${optiqueTypes.map(t => `<option value="${t}">${t}</option>`).join('')}</optgroup>`;
+                return html;
+            };
+
+            const typeOpts = makeTypeOptions("TOUS LES TYPES");
+            const brandOpts = '<option value="ALL">TOUTES LES MARQUES</option>' + brands.map(b => `<option value="${b}">${b}</option>`).join('');
+            const typeOptsMobile = makeTypeOptions("TOUS");
+            const brandOptsMobile = '<option value="ALL">TOUTES</option>' + brands.map(b => `<option value="${b}">${b}</option>`).join('');
+            
+            document.getElementById('typeFilter').innerHTML = typeOpts;
+            document.getElementById('brandFilter').innerHTML = brandOpts;
+            
+            const tm = document.getElementById('typeFilter_m');
+            const bm = document.getElementById('brandFilter_m');
+            if(tm) tm.innerHTML = typeOptsMobile;
+            if(bm) bm.innerHTML = brandOptsMobile;
         }
 
         function filterData() {
@@ -636,12 +694,19 @@
             document.getElementById('noData').classList.toggle('hidden', filtered.length > 0);
         }
 
+        // Palette de couleurs esthétiques pour les cartes mobile
+        const CARD_COLORS = [
+            '#3b82f6','#6366f1','#8b5cf6','#ec4899','#14b8a6',
+            '#f59e0b','#10b981','#ef4444','#0ea5e9','#a855f7'
+        ];
+
         function renderTable(items) {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = items.map((item, index) => {
                 const originalIndex = data.indexOf(item);
+                const cardColor = CARD_COLORS[index % CARD_COLORS.length];
                 return `
-                <tr class="hover:bg-blue-50/40 transition-colors duration-200 group">
+                <tr class="hover:bg-blue-50/40 transition-colors duration-200 group" style="border-left-color:${cardColor}">
                     <td class="px-6 py-4" data-label="Véhicule">
                         <div class="flex flex-col">
                             <span class="text-[13px] font-extrabold text-slate-800 group-hover:text-blue-700 transition-colors">${item.marque}</span>
@@ -661,10 +726,10 @@
                         <span class="text-[10px] font-bold text-slate-500 font-mono">${item.chassis || '-'}</span>
                     </td>
                     <td class="px-6 py-4 text-right" data-label="Local">
-                        <span class="text-sm font-black text-slate-700">${(item.local || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-[9px] font-bold text-slate-400 ml-0.5">DH</span></span>
+                        <span class="text-sm font-black text-slate-700">${(item.local || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                     </td>
                     <td class="px-6 py-4 text-right" data-label="Europe">
-                        <span class="text-sm font-black text-blue-600">${(item.euro || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-[9px] font-bold text-blue-400/70 ml-0.5">DH</span></span>
+                        <span class="text-sm font-black text-blue-600">${(item.euro || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                     </td>
                     <td class="px-6 py-4 text-center" data-label="Ajouté par">
                         ${item.utilisateur ? `<span class="text-[9px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-1 rounded-md uppercase tracking-widest">${item.utilisateur}</span>` : `<span class="text-[10px] text-slate-300">-</span>`}
