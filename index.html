@@ -1,1 +1,713 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAM - GESTIONNAIRE DE TARIFS PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .btn-action { transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-action:hover { transform: translateY(-1px); }
 
+        /* ───── MOBILE ───── */
+        @media (max-width: 768px) {
+            /* Table → format carte */
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { border: 1px solid #e2e8f0; margin-bottom: 0.75rem; border-radius: 0.75rem; background: white; padding: 0.5rem; }
+            td { border: none; position: relative; padding-left: 48% !important; text-align: right !important; min-height: 36px; font-size: 0.8rem; }
+            td:before { content: attr(data-label); position: absolute; left: 0.75rem; width: 44%; font-weight: 800; text-align: left; font-size: 0.65rem; color: #6366f1; text-transform: uppercase; top: 50%; transform: translateY(-50%); }
+
+            /* Header boutons en colonne */
+            #adminButtons { flex-direction: column; width: 100%; }
+            #adminButtons button, .btn-action { width: 100%; }
+
+            /* Watermark plus petit sur mobile */
+            .watermark-text { font-size: 80px !important; }
+
+            /* Modals : pleine largeur, scroll vertical */
+            #propsModal > div, #modal > div { max-width: 100% !important; margin: 0; border-radius: 1rem; max-height: 90vh; overflow-y: auto; }
+
+            /* Login pleine largeur */
+            #loginScreen > div { max-width: 95%; padding: 1.5rem; }
+
+            /* Filtres en colonne sur mobile */
+            .filter-grid { grid-template-columns: 1fr !important; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-6 lg:p-10">
+    <!-- Watermark Anti-Vol -->
+    <div class="fixed inset-0 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.03] z-[-1]">
+        <span class="text-[150px] md:text-[250px] font-black uppercase -rotate-45 select-none whitespace-nowrap text-slate-900">BETCAM</span>
+    </div>
+
+    <!-- ÉCRAN DE CONNEXION -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-8 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="bg-blue-600 h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-black text-slate-900 uppercase">Tarifs <span class="text-blue-600">ZAM</span></h2>
+                <p class="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Édition Cabinet d'Expertise BETCAM</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">Accès Sécurisé</p>
+            </div>
+            
+            <div class="space-y-4 pt-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-indigo-600 uppercase ml-1">Identifiant</label>
+                    <input type="text" id="loginUser" autocomplete="off" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 uppercase" placeholder="Votre identifiant">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-indigo-600 uppercase ml-1">Mot d'accès</label>
+                    <input type="password" id="loginPass" autocomplete="new-password" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20" placeholder="••••••••">
+                </div>
+                <p id="loginError" class="text-xs font-bold text-red-500 text-center hidden">Identifiants incorrects</p>
+                <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-3.5 rounded-xl text-sm font-black uppercase shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition duration-200">Se Connecter</button>
+            </div>
+        </div>
+    </div>
+
+    
+<div id="mainApp" class="max-w-7xl mx-auto space-y-6 hidden">
+        
+    <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4">
+                <div class="bg-blue-600 p-3 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold text-slate-900 tracking-tight uppercase">TARIFS DES GLACES <span class="text-blue-600">(ZAM)</span></h1>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Base de Données Complète v2.3</p>
+                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mt-1">ÉDITION CABINET D'EXPERTISE BETCAM</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+                <div id="adminButtons" class="flex flex-wrap gap-2">
+                    <button onclick="openAddModal()" class="btn-action bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg shadow-emerald-100">
+                        + Ajouter Modèle
+                    </button>
+                    <button onclick="exportExcel()" class="btn-action bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-black uppercase">
+                        Export Excel
+                    </button>
+                    <button onclick="exportPDF()" class="btn-action bg-rose-600 text-white px-4 py-2.5 rounded-xl text-xs font-black uppercase">
+                        Export PDF
+                    </button>
+                    <button onclick="openPropsModal()" class="btn-action bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-black uppercase">
+                        ⚙ Propriétés
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="glass-card p-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="space-y-1">
+                <label class="text-[10px] font-black text-indigo-600 uppercase ml-1">Recherche</label>
+                <input type="text" id="search" oninput="filterData()" placeholder="Modèle, année..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-black text-indigo-600 uppercase ml-1">Catégorie</label>
+                <select id="typeFilter" onchange="filterData()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold outline-none">
+                    <option value="ALL">TOUS LES TYPES</option>
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-black text-indigo-600 uppercase ml-1">Constructeur</label>
+                <select id="brandFilter" onchange="filterData()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold outline-none">
+                    <option value="ALL">TOUTES LES MARQUES</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <div class="bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl w-full text-center border border-blue-100">
+                    <span id="countLabel" class="text-xs font-black">0 MODÈLES</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="glass-card overflow-hidden border border-slate-200">
+            <div class="overflow-auto max-h-[65vh]">
+                <table class="w-full relative">
+                    <thead class="bg-slate-50 sticky top-0 z-20 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+                        <tr>
+                            <th class="bg-slate-50 px-6 py-4 text-left text-[11px] font-black text-indigo-700 uppercase border-b border-slate-200">Véhicule</th>
+                            <th class="bg-slate-50 px-6 py-4 text-center text-[11px] font-black text-indigo-700 uppercase border-b border-slate-200">Type</th>
+                            <th class="bg-slate-50 px-6 py-4 text-right text-[11px] font-black text-emerald-700 uppercase border-b border-slate-200">Local (DH)</th>
+                            <th class="bg-slate-50 px-6 py-4 text-right text-[11px] font-black text-blue-700 uppercase border-b border-slate-200">Europe (DH)</th>
+                            <th id="actionsHeader" class="bg-slate-50 px-6 py-4 text-center text-[11px] font-black text-indigo-700 uppercase border-b border-slate-200">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div id="noData" class="hidden p-20 text-center text-slate-400 font-bold uppercase text-xs">Aucun résultat trouvé</div>
+        </div>
+    </div>
+
+
+    <!-- MODAL PROPRIÉTÉS ADMIN -->
+    <div id="propsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-black text-slate-900 uppercase">⚙ Propriétés · Gestion Utilisateurs</h3>
+                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mt-0.5">Réservé à l'Administrateur BETCAM</p>
+                </div>
+                <button onclick="closePropsModal()" class="p-2 bg-slate-100 rounded-lg text-slate-500 hover:bg-slate-200 font-black">✕</button>
+            </div>
+            <div class="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                <p class="text-xs font-black text-indigo-600 uppercase tracking-widest">Comptes utilisateurs &amp; Autorisations</p>
+                <div class="space-y-3" id="usersPermList"><!-- Rempli dynamiquement --></div>
+                <div class="pt-4 border-t border-slate-100">
+                    <p class="text-[10px] text-slate-400 font-bold">Les comptes créés ici sont enregistrés dans l'onglet "Users" de Google Sheets.</p>
+                </div>
+            </div>
+            <div class="p-6 bg-slate-50">
+                <button onclick="savePermissions()" class="w-full bg-blue-600 text-white py-3 rounded-xl text-xs font-black uppercase shadow-lg">Enregistrer &amp; Fermer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-100">
+                <h3 id="modalTitle" class="text-lg font-black text-slate-900 uppercase">Ajouter un Modèle</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Marque</label>
+                        <input type="text" id="m_marque" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Type</label>
+                        <select id="m_type" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold">
+                            <option value="Pare-Brise">Pare-Brise</option>
+                            <option value="Poids Lourds">Poids Lourds</option>
+                            <option value="Lunette Arrière">Lunette Arrière</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-indigo-600 uppercase">Modèle & Détails</label>
+                    <input type="text" id="m_modele" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Prix Local (DH)</label>
+                        <input type="number" id="m_local" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Prix Europe (DH)</label>
+                        <input type="number" id="m_euro" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-blue-600">
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 bg-slate-50 flex gap-3">
+                <button onclick="saveItem()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-xs font-black uppercase">Enregistrer</button>
+                <button onclick="closeModal()" class="px-6 bg-white border border-slate-200 text-slate-600 py-3 rounded-xl text-xs font-black uppercase">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ─── GESTION DES RÔLES ET PERMISSIONS VIA GOOGLE SHEETS ─────────
+        let isAdmin = false;
+        let userCanManage = false;
+        let dbUsers = []; 
+
+        // Sauvegarde de secours s'il n'y a pas internet
+        function loadUsersFallback() {
+            const saved = localStorage.getItem("zm_users_fb");
+            if (saved) return JSON.parse(saved);
+            return [
+                { id: "USER1", pass: "PASS1", add: false, excel: false, pdf: false }
+            ];
+        }
+
+        async function initUsers() {
+            const loginBtn = document.querySelector('#loginScreen button');
+            if(loginBtn) { loginBtn.innerText = "CONNEXION AU RÉSEAU..."; loginBtn.disabled = true; }
+            
+            const secureUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec?token=BETCAM_SECRET_9X&action=getUsers";
+            try {
+                const res = await fetch(secureUrl);
+                dbUsers = await res.json();
+                localStorage.setItem("zm_users_fb", JSON.stringify(dbUsers)); // Cache
+            } catch(e) {
+                console.warn("Utilisation des utilisateurs locaux (mode hors-ligne).");
+                dbUsers = loadUsersFallback();
+            }
+            
+            if(loginBtn) { loginBtn.innerText = "SE CONNECTER"; loginBtn.disabled = false; }
+        }
+
+        // Charger les utilisateurs dès l'ouverture
+        initUsers();
+
+        function checkLogin() {
+            const user = document.getElementById('loginUser').value.toUpperCase().trim();
+            const pass = document.getElementById('loginPass').value.toUpperCase().trim();
+            
+            // COMPTE ADMINISTRATEUR
+            if(user === "BETCAM" && pass === "EXPERT2026") {
+                isAdmin = true;
+                userCanManage = true;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                // S'assurer que les boutons admin sont visibles (corrige les bugs de déco/reco)
+                const adminBtns = document.getElementById('adminButtons');
+                if(adminBtns) adminBtns.classList.remove('hidden');
+                ['.bg-emerald-600', '.bg-indigo-700', '.bg-slate-800', '.bg-rose-600'].forEach(sel => {
+                    const el = document.querySelector('#adminButtons ' + sel);
+                    if (el) el.classList.remove('hidden');
+                });
+                
+                filterData();
+                return;
+            }
+
+            // COMPTES UTILISATEURS (Depuis Google Sheets)
+            const found = dbUsers.find(u => u.id.toUpperCase() === user && u.pass.toUpperCase() === pass);
+            if (found) {
+                isAdmin = false;
+                userCanManage = (String(found.add)==='true'||found.add===true);
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                document.getElementById('adminButtons').classList.add('hidden');
+                
+                // Réinitialiser les boutons pour ce login
+                ['.bg-emerald-600', '.bg-indigo-700', '.bg-slate-800', '.bg-rose-600'].forEach(sel => {
+                    const el = document.querySelector('#adminButtons ' + sel);
+                    if (el) el.classList.remove('hidden');
+                });
+
+                if (userCanManage || found.excel || found.pdf) {
+                    document.getElementById('adminButtons').classList.remove('hidden');
+                    
+                    // Masquer toujours le bouton "Propriétés" (seulement BETCAM)
+                    const propsBtn = document.querySelector('#adminButtons .bg-indigo-700');
+                    if (propsBtn) propsBtn.classList.add('hidden');
+
+                    if (!userCanManage) {
+                        const addBtn = document.querySelector('#adminButtons .bg-emerald-600');
+                        if (addBtn) addBtn.classList.add('hidden');
+                    }
+                    if (!(String(found.excel)==='true'||found.excel===true)) {
+                        const excelBtn = document.querySelector('#adminButtons .bg-slate-800');
+                        if (excelBtn) excelBtn.classList.add('hidden');
+                    }
+                    if (!(String(found.pdf)==='true'||found.pdf===true)) {
+                        const pdfBtn = document.querySelector('#adminButtons .bg-rose-600');
+                        if (pdfBtn) pdfBtn.classList.add('hidden');
+                    }
+                }
+                
+                // On met à jour le tableau pour afficher (ou non) les boutons crayon/poubelle
+                filterData();
+                return;
+            }
+
+            document.getElementById('loginError').classList.remove('hidden');
+        }
+
+        // ─── MODAL PROPRIÉTÉS ──────────────────────────────────────────
+        function openPropsModal() {
+            const list = document.getElementById('usersPermList');
+            // Afficher exactement 8 cases
+            const slots = [];
+            for (let i = 0; i < 8; i++) {
+                slots.push(dbUsers[i] || { id: "USER"+(i+1), pass: "PASS"+(i+1), add: false, excel: false, pdf: false });
+            }
+            
+            list.innerHTML = slots.map((u, i) => `
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+                    <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Compte ${i+1}</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Identifiant</label>
+                            <input id="uid_${i}" value="${u.id}" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold uppercase bg-white outline-none focus:ring-2 focus:ring-blue-500/20">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Mot de passe</label>
+                            <input id="upass_${i}" value="${u.pass}" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500/20">
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-4 pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="uadd_${i}" ${String(u.add)==='true'||u.add===true ? 'checked' : ''} class="w-4 h-4 accent-emerald-600">
+                            <span class="text-xs font-black text-emerald-600 uppercase">Ajouter Modèle</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="uexcel_${i}" ${String(u.excel)==='true'||u.excel===true ? 'checked' : ''} class="w-4 h-4 accent-slate-800">
+                            <span class="text-xs font-black text-slate-600 uppercase">Export Excel</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="updf_${i}" ${String(u.pdf)==='true'||u.pdf===true ? 'checked' : ''} class="w-4 h-4 accent-rose-600">
+                            <span class="text-xs font-black text-rose-500 uppercase">Export PDF</span>
+                        </label>
+                    </div>
+                </div>`).join('');
+                
+            document.getElementById('propsModal').classList.remove('hidden');
+        }
+
+        async function savePermissions() {
+            const btn = document.querySelector('#propsModal button.bg-blue-600');
+            const origText = btn.innerText;
+            btn.innerText = "ENREGISTREMENT EN LIGNE...";
+            btn.disabled = true;
+
+            const newUsers = [];
+            for (let i = 0; i < 8; i++) {
+                newUsers.push({
+                    id: document.getElementById('uid_' + i).value.toUpperCase().trim(),
+                    name: "Utilisateur " + (i+1),
+                    pass: document.getElementById('upass_' + i).value.trim(),
+                    add: document.getElementById('uadd_' + i).checked,
+                    excel: document.getElementById('uexcel_' + i).checked,
+                    pdf: document.getElementById('updf_' + i).checked
+                });
+            }
+
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec";
+            try {
+                await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ token: "BETCAM_SECRET_9X", action: "saveUsers", users: newUsers })
+                });
+                dbUsers = newUsers;
+                localStorage.setItem("zm_users_fb", JSON.stringify(dbUsers));
+                closePropsModal();
+            } catch (e) {
+                console.error("Erreur serveur", e);
+                alert("Erreur réseau: impossible de sauvegarder dans Google Sheets.");
+            } finally {
+                btn.innerText = origText;
+                btn.disabled = false;
+            }
+        }
+
+        function closePropsModal() {
+            document.getElementById('propsModal').classList.add('hidden');
+        }
+        
+        // Permet de se connecter avec la touche Entrée
+        document.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
+                checkLogin();
+            }
+        });
+
+        // Intégration de la base de données via Google Sheets
+        let data = [];
+        let currentEditIndex = null;
+
+        function loadData(csvUrl) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(csvUrl, {
+                    download: true,
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: results => resolve(results),
+                    error: err => reject(err)
+                });
+            });
+        }
+
+        async function init() {
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="py-10 text-center text-sm font-bold text-blue-600">Chargement des données depuis Google Sheets...</td></tr>';
+            
+            // URL CSV publique supprimée - accès sécurisé via Apps Script
+            // Chargement sécurisé via Apps Script (plus de CSV public)
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec";
+            const secureUrl = scriptUrl + "?token=BETCAM_SECRET_9X";
+            const urls = [
+                secureUrl,
+                "https://corsproxy.io/?" + secureUrl,
+                "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(secureUrl)
+            ];
+
+            try {
+                let results = null;
+                let lastErr = "";
+                for (const u of urls) {
+                    try {
+                        results = await loadData(u);
+                        if (results && results.data && results.data.length > 0) break;
+                    } catch(e) {
+                        lastErr = e.message || String(e);
+                    }
+                }
+                if (!results || !results.data || results.data.length === 0) {
+                    throw new Error("Aucune donnée reçue après toutes les tentatives. " + lastErr);
+                }
+                const csvText = "ok"; // Already parsed by PapaParse above
+                
+                // Process results already fetched
+                (function(results) {
+                        try {
+                            if (!results.data || results.data.length === 0) {
+                                throw new Error("Le fichier CSV est vide ou illisible.");
+                            }
+                            data = results.data.filter(row => Object.keys(row).length > 2).map(row => {
+                                const parsePrice = (priceStr) => {
+                                    if (!priceStr) return 0;
+                                    let s = String(priceStr);
+                                    // Remove spaces (thousands separators)
+                                    s = s.replace(/\s/g, '');
+                                    // Replace comma with dot for decimals
+                                    s = s.replace(',', '.');
+                                    // Remove any character that is not digit or dot
+                                    s = s.replace(/[^\d.]/g, '');
+                                    return parseFloat(s) || 0;
+                                };
+                                return {
+                                    marque: (row.Marque || row.MARQUE || Object.values(row)[0] || "").trim().toUpperCase(),
+                                    modele: (row.Models || row.MODELE || Object.values(row)[1] || "").trim(),
+                                    type: (row["Type Glace"] || row["TYPE"] || Object.values(row)[2] || "Pare-Brise").trim(),
+                                    local: parsePrice(row["LOCAL & AUTRE"] || row["LOCAL&AUTRE"] || Object.values(row)[4]),
+                                    euro: parsePrice(row["Produit Européen"] || row["ProduitEuropéen"] || Object.values(row)[5])
+                                };
+                            }).filter(item => item.marque && item.modele);
+
+                            populateFilters();
+                            filterData();
+                        } catch(err) {
+                            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-left text-sm font-bold text-red-600">Erreur de traitement des données:<br><pre class="text-xs mt-2">' + err.message + '</pre></td></tr>';
+                        }
+                })(results);
+            } catch (error) {
+                console.error("Erreur détaillée:", error);
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-left text-sm font-bold text-red-600">ERREUR TECHNIQUE DU CHARGEMENT:<br><pre class="text-xs text-slate-700 whitespace-pre-wrap mt-2">' + (error.message || error.toString()) + '</pre></td></tr>';
+            }
+        }
+
+        function populateFilters() {
+            const types = [...new Set(data.map(i => i.type))].sort();
+            const brands = [...new Set(data.map(i => i.marque))].sort();
+            
+            document.getElementById('typeFilter').innerHTML = '<option value="ALL">TOUS LES TYPES</option>' + 
+                types.map(t => `<option value="${t}">${t.toUpperCase()}</option>`).join('');
+            
+            document.getElementById('brandFilter').innerHTML = '<option value="ALL">TOUTES LES MARQUES</option>' + 
+                brands.map(b => `<option value="${b}">${b}</option>`).join('');
+        }
+
+        function filterData() {
+            const search = document.getElementById('search').value.toLowerCase();
+            const type = document.getElementById('typeFilter').value;
+            const brand = document.getElementById('brandFilter').value;
+
+            const filtered = data.filter(item => {
+                const matchSearch = item.marque.toLowerCase().includes(search) || item.modele.toLowerCase().includes(search);
+                const matchType = type === "ALL" || item.type === type;
+                const matchBrand = brand === "ALL" || item.marque === brand;
+                return matchSearch && matchType && matchBrand;
+            });
+
+            renderTable(filtered);
+            document.getElementById('countLabel').innerText = `${filtered.length} MODÈLES`;
+            document.getElementById('noData').classList.toggle('hidden', filtered.length > 0);
+        }
+
+        function renderTable(items) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = items.map((item, index) => {
+                const originalIndex = data.indexOf(item);
+                return `
+                <tr class="hover:bg-slate-50 transition-all">
+                    <td class="px-6 py-4" data-label="Véhicule">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-extrabold text-slate-900">${item.marque}</span>
+                            <span class="text-[10px] font-bold text-red-600 uppercase tracking-tight">${item.modele}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center" data-label="Type">
+                        <span class="px-3 py-1 bg-slate-100 rounded-full text-[9px] font-black uppercase text-slate-600 border border-slate-200">
+                            ${item.type}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right" data-label="Local">
+                        <span class="text-sm font-black text-slate-700">${(item.local || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right" data-label="Europe">
+                        <span class="text-sm font-black text-blue-600">${(item.euro || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center" data-label="Actions">
+                        ${userCanManage ? `
+                        <div class="flex justify-center gap-2">
+                            <button onclick="editItem(${originalIndex})" class="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                            </button>
+                            <button onclick="deleteItem(${originalIndex})" class="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-red-600 hover:text-white transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                        </div>` : ''}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // CRUD
+        function openAddModal() {
+            currentEditIndex = null;
+            document.getElementById('modalTitle').innerText = "Ajouter un Modèle";
+            document.getElementById('m_marque').value = "";
+            document.getElementById('m_modele').value = "";
+            document.getElementById('m_local').value = "";
+            document.getElementById('m_euro').value = "";
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function editItem(index) {
+            currentEditIndex = index;
+            const item = data[index];
+            document.getElementById('modalTitle').innerText = "Modifier le Modèle";
+            document.getElementById('m_marque').value = item.marque;
+            document.getElementById('m_modele').value = item.modele;
+            document.getElementById('m_type').value = item.type;
+            document.getElementById('m_local').value = item.local || 0;
+            document.getElementById('m_euro').value = item.euro || 0;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        async function saveItem() {
+            const newItem = {
+                marque: document.getElementById('m_marque').value.toUpperCase().trim(),
+                modele: document.getElementById('m_modele').value.trim(),
+                type: document.getElementById('m_type').value,
+                local: parseInt(document.getElementById('m_local').value) || 0,
+                euro: parseInt(document.getElementById('m_euro').value) || 0
+            };
+
+            if(!newItem.marque || !newItem.modele) {
+                alert("Veuillez remplir au moins la marque et le modèle.");
+                return;
+            }
+
+            if(currentEditIndex !== null) {
+                data[currentEditIndex] = newItem;
+                closeModal();
+                populateFilters();
+                filterData();
+                return;
+            }
+
+            // Récupère le bouton pour indiquer le chargement
+            const saveBtn = document.querySelector('#modal button.bg-blue-600');
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = "ENREGISTREMENT...";
+            saveBtn.disabled = true;
+
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec";
+
+            try {
+                // Utilisation de text/plain pour éviter le blocage CORS
+                await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({...newItem, token: "BETCAM_SECRET_9X"})
+                });
+                
+                // Actualise l'affichage local seulement APRES succès de Google
+                data.unshift(newItem);
+                closeModal();
+                populateFilters();
+                filterData();
+            } catch (error) {
+                console.error("Erreur serveur lors de la sauvegarde :", error);
+                alert("Une erreur est survenue lors de l'enregistrement en ligne. Vérifiez votre connexion.");
+            } finally {
+                saveBtn.innerText = originalText;
+                saveBtn.disabled = false;
+            }
+        }
+
+        function deleteItem(index) {
+            if(confirm("Confirmer la suppression ?")) {
+                data.splice(index, 1);
+                filterData();
+                populateFilters();
+            }
+        }
+
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+        // EXPORTS
+        function exportExcel() {
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Tarifs_ZAM");
+            XLSX.writeFile(wb, "Tarifs_Des_Glaces_ZAM.xlsx");
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Filigrane PDF
+            doc.setTextColor(235, 240, 245); // Very light gray
+            doc.setFontSize(80);
+            doc.text("BETCAM", 105, 150, { angle: 45, align: "center" });
+            
+            // Titre et Edition
+            doc.setTextColor(0, 0, 0); // Reset to black
+            doc.setFontSize(16);
+            doc.text("TARIFS DES GLACES (ZAM)", 14, 15);
+            doc.setFontSize(10);
+            doc.setTextColor(225, 29, 72); // Rose-600
+            doc.text("ÉDITION CABINET D'EXPERTISE BETCAM", 14, 22);
+            doc.setTextColor(0, 0, 0);
+
+            const tableRows = data.map(i => [
+                i.marque, 
+                i.modele, 
+                i.type, 
+                (i.local || 0).toFixed(2).replace('.', ','), 
+                (i.euro || 0).toFixed(2).replace('.', ',')
+            ]);
+            
+            doc.autoTable({
+                head: [['Marque', 'Modèle', 'Type', 'Local (DH)', 'Europe (DH)']],
+                body: tableRows,
+                startY: 25,
+                styles: { fontSize: 7 },
+                columnStyles: {
+                    3: { halign: 'right' },
+                    4: { halign: 'right' }
+                },
+                headStyles: {
+                    fillColor: [30, 63, 159], // Un beau bleu professionnel classique
+                    textColor: 255
+                }
+            });
+            doc.save("Tarifs_Des_Glaces_ZAM.pdf");
+        }
+
+        init();
+    </script>
+</body>
+</html>
