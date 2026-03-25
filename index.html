@@ -466,7 +466,7 @@
                                     Local</span></th>
                             <th class="px-6 py-4 border-b border-slate-200 text-right"><span
                                     class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Tarif
-                                    Europe</span></th>
+                                    BETCAM</span></th>
                             <th class="px-6 py-4 border-b border-slate-200 text-center"><span
                                     class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Ajouté
                                     Par</span></th>
@@ -612,7 +612,7 @@
                             class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-blue-500/20 outline-none">
                     </div>
                     <div class="space-y-1">
-                        <label class="text-[10px] font-black text-indigo-600 uppercase">Prix Europe (DH)</label>
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Prix BETCAM (DH)</label>
                         <input type="number" id="m_euro"
                             class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none">
                     </div>
@@ -881,7 +881,7 @@
                     chassis: (row["Ch\u00e2ssis"] || row.CHASSIS || row.chassis || "").toString().trim().toUpperCase(),
                     categorie: (row["Cat\u00e9gorie"] || row.CATEGORIE || row.categorie || "").toString().trim().toUpperCase(),
                     local: parsePrice(row["LOCAL & AUTRE"] || row["LOCAL&AUTRE"] || row.LOCAL || row.Local || vals[vals.length - 3]),
-                    euro: parsePrice(row["Produit Europ\u00e9en"] || row["ProduitEurop\u00e9en"] || row.EUROPE || row.Europe || vals[vals.length - 2]),
+                    euro: parsePrice(row["Produit Europ\u00e9en"] || row["ProduitEurop\u00e9en"] || row.BETCAM || row.BETCAM || vals[vals.length - 2]),
                     utilisateur: (row["Utilisateur"] || row.UTILISATEUR || "").toString().trim(),
                     date: (row["Date"] || row.DATE || "").toString().trim()
                 };
@@ -1033,7 +1033,7 @@
                     <td class="px-6 py-4 text-right" data-label="Local">
                         <span class="text-sm font-black text-slate-700">${(item.local || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </td>
-                    <td class="px-6 py-4 text-right" data-label="Europe">
+                    <td class="px-6 py-4 text-right" data-label="BETCAM">
                         <span class="text-sm font-black text-blue-600">${(item.euro || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </td>
                     <td class="px-6 py-4 text-center" data-label="Ajouté par">
@@ -1201,7 +1201,7 @@
             ]);
 
             doc.autoTable({
-                head: [['Marque', 'Modèle', 'Année', 'Châssis', 'Type', 'Catégorie', 'Local', 'Europe']],
+                head: [['Marque', 'Modèle', 'Année', 'Châssis', 'Type', 'Catégorie', 'Local', 'BETCAM']],
                 body: tableRows,
                 startY: 25,
                 styles: { fontSize: 6 },
