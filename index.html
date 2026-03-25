@@ -216,7 +216,7 @@
                         class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">BDG</span>
                 </h2>
                 <div class="space-y-1">
-                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Base de Données v2.5</p>
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Base de Données v2.6</p>
                     <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Édition Master BETCAM</p>
                 </div>
             </div>
@@ -272,7 +272,7 @@
                     <div class="flex flex-col gap-1 mt-1.5 ml-0.5">
                         <span
                             class="text-[9px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded-md w-max">Base
-                            de Données v2.5</span>
+                            de Données v2.6</span>
                         <span
                             class="text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100 w-max shadow-sm">Édition
                             Master BETCAM</span>
@@ -281,8 +281,8 @@
             </div>
 
             <div class="flex flex-wrap gap-2 w-full xl:w-auto justify-start xl:justify-end mt-2 xl:mt-0">
-                <div id="adminButtons" class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
-                    <button onclick="openAddModal()"
+                <div id="adminButtons" class="flex flex-wrap items-center gap-2 w-full xl:w-auto hidden">
+                    <button id="btn-add" onclick="openAddModal()"
                         class="btn-action bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg shadow-emerald-500/20 border border-emerald-600">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4">
@@ -290,7 +290,7 @@
                         </svg>
                         Nouveau
                     </button>
-                    <button onclick="exportExcel()"
+                    <button id="btn-excel" onclick="exportExcel()"
                         class="btn-action bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm">
                         <svg class="w-4 h-4 mr-1.5 text-emerald-600" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -300,7 +300,7 @@
                         </svg>
                         Excel
                     </button>
-                    <button onclick="exportPDF()"
+                    <button id="btn-pdf" onclick="exportPDF()"
                         class="btn-action bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm">
                         <svg class="w-4 h-4 mr-1.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -309,7 +309,7 @@
                         </svg>
                         PDF
                     </button>
-                    <button onclick="openPropsModal()"
+                    <button id="btn-props" onclick="openPropsModal()"
                         class="btn-action bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg shadow-slate-800/20">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -340,8 +340,8 @@
                     <div class="relative">
                         <input type="text" id="search" oninput="filterData()"
                             placeholder="Tapez modèle, marque ou châssis..."
-                            class="w-full bg-blue-50/40 border border-blue-100 rounded-xl pl-9 pr-4 py-2 text-[10px] font-bold placeholder-slate-400 outline-none text-slate-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-sm shadow-blue-500/5">
-                        <svg class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-blue-400/70" fill="none"
+                            class="w-full bg-blue-50/20 border-2 border-blue-500/30 rounded-xl pl-9 pr-4 py-2 text-[10px] font-bold placeholder-slate-400 outline-none text-slate-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-sm">
+                        <svg class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-blue-500" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -355,10 +355,10 @@
                         de Glace</label>
                     <div class="relative">
                         <select id="typeFilter" onchange="filterData()"
-                            class="w-full bg-indigo-50/40 border border-indigo-100 rounded-xl px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all appearance-none cursor-pointer shadow-sm shadow-indigo-500/5">
+                            class="w-full bg-indigo-50/20 border-2 border-indigo-500/30 rounded-xl px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all appearance-none cursor-pointer shadow-sm">
                             <option value="ALL">TOUS LES TYPES</option>
                         </select>
-                        <svg class="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 text-indigo-400/70 pointer-events-none"
+                        <svg class="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 text-indigo-500 pointer-events-none"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -370,10 +370,10 @@
                         class="text-[8px] font-black text-emerald-600 uppercase ml-1 drop-shadow-[0_1px_1px_rgba(5,150,105,0.1)]">Marque</label>
                     <div class="relative">
                         <select id="brandFilter" onchange="filterData()"
-                            class="w-full bg-emerald-50/40 border border-emerald-100 rounded-xl px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all appearance-none cursor-pointer shadow-sm shadow-emerald-500/5">
+                            class="w-full bg-emerald-50/20 border-2 border-emerald-500/30 rounded-xl px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all appearance-none cursor-pointer shadow-sm">
                             <option value="ALL">TOUTES MARQUES</option>
                         </select>
-                        <svg class="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400/70 pointer-events-none"
+                        <svg class="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -386,12 +386,12 @@
                         BRIS</label>
                     <div class="relative">
                         <select id="categorieFilter" onchange="filterData()"
-                            class="w-full bg-rose-50/40 border border-rose-100 rounded-xl px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all appearance-none cursor-pointer shadow-sm shadow-rose-500/5">
+                            class="w-full bg-rose-50/20 border-2 border-rose-500/30 rounded-xl px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all appearance-none cursor-pointer shadow-sm">
                             <option value="ALL">TOUTES CATÉGORIES</option>
                             <option value="ORIGINE">ORIGINE</option>
                             <option value="ADAPTABLE">ADAPTABLE</option>
                         </select>
-                        <svg class="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 text-rose-400/70 pointer-events-none"
+                        <svg class="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 text-rose-500 pointer-events-none"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -412,27 +412,27 @@
                 <input type="text" id="search_m"
                     oninput="document.getElementById('search').value=this.value;filterData()"
                     placeholder="🔍 Modèle, marque, châssis..."
-                    class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold placeholder-slate-400 outline-none focus:border-blue-400">
+                    class="w-full bg-blue-50/20 border-2 border-blue-500/40 rounded-lg px-3 py-2 text-xs font-bold placeholder-slate-400 outline-none focus:bg-white focus:border-blue-500 transition-all">
                 <div class="grid grid-cols-2 gap-2">
                     <select id="typeFilter_m"
                         onchange="document.getElementById('typeFilter').value=this.value;filterData()"
-                        class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                        class="bg-indigo-50/20 border-2 border-indigo-500/40 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
                         <option value="ALL">TYPE: TOUS</option>
                     </select>
                     <select id="brandFilter_m"
                         onchange="document.getElementById('brandFilter').value=this.value;filterData()"
-                        class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                        class="bg-emerald-50/20 border-2 border-emerald-500/40 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
                         <option value="ALL">MARQUE: TOUTES</option>
                     </select>
                     <select id="categorieFilter_m"
                         onchange="document.getElementById('categorieFilter').value=this.value;filterData()"
-                        class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
-                        <option value="ALL">CATÉG BRIS: TOUTES</option>
+                        class="bg-rose-50/20 border-2 border-rose-500/40 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                        <option value="ALL">BRIS: TOUTES</option>
                         <option value="ORIGINE">ORIGINE</option>
                         <option value="ADAPTABLE">ADAPTABLE</option>
                     </select>
-                    <div class="bg-indigo-50 rounded-lg flex items-center justify-center border border-indigo-100">
-                        <span id="countLabel" class="text-[11px] font-black text-indigo-700">0 RÉSULTATS</span>
+                    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-lg flex items-center justify-center border border-indigo-400/30 shadow-md">
+                        <span id="countLabel_m" class="text-[10px] font-black text-white">0 RÉSULTATS</span>
                     </div>
                 </div>
             </div>
@@ -688,18 +688,18 @@
                 document.getElementById('mainApp').classList.remove('hidden');
             };
 
-            // COMPTE ADMINISTRATEUR
+            // COMPTE ADMINISTRATEUR BETCAM
             if (user === "BETCAM" && pass.toUpperCase() === "EXPERT2026") {
                 isAdmin = true;
                 userCanManage = true;
                 currentUser = "BETCAM";
                 handleLoginSuccess();
 
-                // S'assurer que les boutons admin sont visibles (corrige les bugs de déco/reco)
+                // Afficher tous les contrôles pour l'admin principal
                 const adminBtns = document.getElementById('adminButtons');
                 if (adminBtns) adminBtns.classList.remove('hidden');
-                ['.bg-emerald-600', '.bg-indigo-700', '.bg-slate-800', '.bg-rose-600'].forEach(sel => {
-                    const el = document.querySelector('#adminButtons ' + sel);
+                ['btn-add', 'btn-excel', 'btn-pdf', 'btn-props'].forEach(id => {
+                    const el = document.getElementById(id);
                     if (el) el.classList.remove('hidden');
                 });
 
@@ -708,44 +708,44 @@
             }
 
             // COMPTES UTILISATEURS (Depuis Google Sheets)
-            const found = dbUsers.find(u => u.id.toUpperCase() === user && u.pass === pass);
-            if (found || dbUsers.find(u => u.id.toUpperCase() === user && u.pass.toUpperCase() === pass.toUpperCase())) {
-                const theFound = found || dbUsers.find(u => u.id.toUpperCase() === user && u.pass.toUpperCase() === pass.toUpperCase()); // Tolérance majuscules
+            const foundUser = dbUsers.find(u => u.id.toUpperCase() === user && (u.pass === pass || u.pass.toUpperCase() === pass.toUpperCase()));
+            
+            if (foundUser) {
                 isAdmin = false;
-                userCanManage = (String(theFound.add) === 'true' || theFound.add === true);
-                currentUser = theFound.id.toUpperCase();
+                userCanManage = (String(foundUser.add) === 'true' || foundUser.add === true);
+                currentUser = foundUser.id.toUpperCase();
                 handleLoginSuccess();
 
-                document.getElementById('adminButtons').classList.add('hidden');
-
-                // Réinitialiser les boutons pour ce login
-                ['.bg-emerald-600', '.bg-indigo-700', '.bg-slate-800', '.bg-rose-600'].forEach(sel => {
-                    const el = document.querySelector('#adminButtons ' + sel);
-                    if (el) el.classList.remove('hidden');
-                });
-
-                if (userCanManage || found.excel || found.pdf) {
-                    document.getElementById('adminButtons').classList.remove('hidden');
-
-                    // Masquer toujours le bouton "Propriétés" (seulement BETCAM)
-                    const propsBtn = document.querySelector('#adminButtons .bg-indigo-700');
+                // Gestion précise des boutons par ID
+                const adminBtns = document.getElementById('adminButtons');
+                if (adminBtns) {
+                    adminBtns.classList.remove('hidden');
+                    
+                    // 1. Toujours masquer "Admin" (Propriétés) pour TOUS les utilisateurs sauf BETCAM
+                    const propsBtn = document.getElementById('btn-props');
                     if (propsBtn) propsBtn.classList.add('hidden');
 
-                    if (!userCanManage) {
-                        const addBtn = document.querySelector('#adminButtons .bg-emerald-600');
-                        if (addBtn) addBtn.classList.add('hidden');
-                    }
-                    if (!(String(found.excel) === 'true' || found.excel === true)) {
-                        const excelBtn = document.querySelector('#adminButtons .bg-slate-800');
-                        if (excelBtn) excelBtn.classList.add('hidden');
-                    }
-                    if (!(String(found.pdf) === 'true' || found.pdf === true)) {
-                        const pdfBtn = document.querySelector('#adminButtons .bg-rose-600');
-                        if (pdfBtn) pdfBtn.classList.add('hidden');
+                    // 2. Nouveau (Add) : Uniquement si coché
+                    const addBtn = document.getElementById('btn-add');
+                    const isAddAllowed = (String(foundUser.add) === 'true' || foundUser.add === true);
+                    if (addBtn) addBtn.classList.toggle('hidden', !isAddAllowed);
+
+                    // 3. Excel : Uniquement si coché
+                    const excelBtn = document.getElementById('btn-excel');
+                    const isExcelAllowed = (String(foundUser.excel) === 'true' || foundUser.excel === true);
+                    if (excelBtn) excelBtn.classList.toggle('hidden', !isExcelAllowed);
+
+                    // 4. PDF : Uniquement si coché
+                    const pdfBtn = document.getElementById('btn-pdf');
+                    const isPdfAllowed = (String(foundUser.pdf) === 'true' || foundUser.pdf === true);
+                    if (pdfBtn) pdfBtn.classList.toggle('hidden', !isPdfAllowed);
+
+                    // Si absolument rien n'est autorisé, on cache le container complet
+                    if (!isAddAllowed && !isExcelAllowed && !isPdfAllowed) {
+                        adminBtns.classList.add('hidden');
                     }
                 }
 
-                // On met à jour le tableau pour afficher (ou non) les boutons crayon/poubelle
                 filterData();
                 return;
             }
@@ -1009,7 +1009,7 @@
                 const originalIndex = data.indexOf(item);
                 const cardColor = CARD_COLORS[index % CARD_COLORS.length];
                 return `
-                <tr class="hover:bg-blue-50/40 transition-colors duration-200 group" style="border-left-color:${cardColor}">
+                <tr class="hover:bg-blue-50/40 transition-colors duration-200 group border-l-4" style="border-left-color:${cardColor}">
                     <td class="px-6 py-4" data-label="Véhicule">
                         <div class="flex flex-col">
                             <span class="text-[13px] font-extrabold text-slate-800 group-hover:text-blue-700 transition-colors">${item.marque}</span>
