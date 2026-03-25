@@ -993,7 +993,9 @@
             });
 
             renderTable(filtered);
-            document.getElementById('countLabel').innerText = `${filtered.length} MODÈLES`;
+            const countText = `${filtered.length} ${filtered.length > 1 ? 'RÉSULTATS' : 'RÉSULTAT'}`;
+            if (document.getElementById('countLabel')) document.getElementById('countLabel').innerText = countText;
+            if (document.getElementById('countLabel_m')) document.getElementById('countLabel_m').innerText = countText;
             document.getElementById('noData').classList.toggle('hidden', filtered.length > 0);
         }
 
