@@ -161,7 +161,6 @@
                 <select id="categorieFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
                     <option value="ALL">TOUTES CATÉGORIES</option>
                     <option value="ORIGINE">ORIGINE</option>
-                    <option value="RÉCUPÉRATION">RÉCUPÉRATION</option>
                     <option value="ADAPTABLE">ADAPTABLE</option>
                 </select>
             </div>
@@ -273,7 +272,6 @@
                         <select id="m_categorie" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                             <option value="">(Non spécifié)</option>
                             <option value="ORIGINE">ORIGINE</option>
-                            <option value="RÉCUPÉRATION">RÉCUPÉRATION</option>
                             <option value="ADAPTABLE">ADAPTABLE</option>
                         </select>
                     </div>
@@ -521,88 +519,90 @@
         // Intégration de la base de données via Google Sheets
         let data = [];
         let currentEditIndex = null;
+        const CACHE_KEY = "zm_tarifs_cache";
+        const CACHE_TTL = 12 * 60 * 60 * 1000; // 12 heures
 
         function loadData(csvUrl) {
             return new Promise((resolve, reject) => {
                 Papa.parse(csvUrl, {
-                    download: true,
-                    header: true,
-                    skipEmptyLines: true,
+                    download: true, header: true, skipEmptyLines: true,
                     complete: results => resolve(results),
                     error: err => reject(err)
                 });
             });
         }
 
-        async function init() {
-            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="py-10 text-center text-sm font-bold text-blue-600">Chargement des données depuis Google Sheets...</td></tr>';
-            
-            // URL CSV publique supprimée - accès sécurisé via Apps Script
-            // Chargement sécurisé via Apps Script (plus de CSV public)
-            const scriptUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec";
-            const secureUrl = scriptUrl + "?token=BETCAM_SECRET_9X";
-            const urls = [
-                secureUrl,
-                "https://corsproxy.io/?" + secureUrl,
-                "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(secureUrl)
-            ];
+        function parseRows(rawData) {
+            const parsePrice = v => {
+                if (!v) return 0;
+                let s = String(v).replace(/\s/g,'').replace(',','.').replace(/[^\d.]/g,'');
+                return parseFloat(s) || 0;
+            };
+            return rawData.filter(row => Object.keys(row).length > 2).map(row => {
+                const vals = Object.values(row);
+                return {
+                    marque:      (row.Marque      || row.MARQUE      || vals[0] || "").toString().trim().toUpperCase(),
+                    modele:      (row.Models      || row.MODELE      || row.Modele || vals[1] || "").toString().trim(),
+                    type:        (row["Type Glace"]|| row.TYPE       || row.Type   || vals[2] || "").toString().trim(),
+                    annee:       (row["Ann\u00e9e"]    || row.ANNEE     || row.annee  || "").toString().trim(),
+                    chassis:     (row["Ch\u00e2ssis"]  || row.CHASSIS   || row.chassis || "").toString().trim().toUpperCase(),
+                    categorie:   (row["Cat\u00e9gorie"]|| row.CATEGORIE || row.categorie || "").toString().trim().toUpperCase(),
+                    local:       parsePrice(row["LOCAL & AUTRE"] || row["LOCAL&AUTRE"] || row.LOCAL || row.Local || vals[vals.length-3]),
+                    euro:        parsePrice(row["Produit Europ\u00e9en"] || row["ProduitEurop\u00e9en"] || row.EUROPE || row.Europe || vals[vals.length-2]),
+                    utilisateur: (row["Utilisateur"] || row.UTILISATEUR || "").toString().trim(),
+                    date:        (row["Date"] || row.DATE || "").toString().trim()
+                };
+            }).filter(i => i.marque && i.modele);
+        }
 
-            try {
-                let results = null;
-                let lastErr = "";
-                for (const u of urls) {
-                    try {
-                        results = await loadData(u);
-                        if (results && results.data && results.data.length > 0) break;
-                    } catch(e) {
-                        lastErr = e.message || String(e);
-                    }
-                }
-                if (!results || !results.data || results.data.length === 0) {
-                    throw new Error("Aucune donnée reçue après toutes les tentatives. " + lastErr);
-                }
-                const csvText = "ok"; // Already parsed by PapaParse above
-                
-                // Process results already fetched
-                (function(results) {
-                        try {
-                            if (!results.data || results.data.length === 0) {
-                                throw new Error("Le fichier CSV est vide ou illisible.");
-                            }
-                            data = results.data.filter(row => Object.keys(row).length > 2).map(row => {
-                                const parsePrice = (priceStr) => {
-                                    if (!priceStr) return 0;
-                                    let s = String(priceStr);
-                                    s = s.replace(/\s/g, '');
-                                    s = s.replace(',', '.');
-                                    s = s.replace(/[^\d.]/g, '');
-                                    return parseFloat(s) || 0;
-                                };
-                                // Lecture par nom de colonne en priorité, positions en dernier recours
-                                const vals = Object.values(row);
-                                return {
-                                    marque:      (row.Marque      || row.MARQUE      || vals[0] || "").toString().trim().toUpperCase(),
-                                    modele:      (row.Models      || row.MODELE      || row.Modele || vals[1] || "").toString().trim(),
-                                    type:        (row["Type Glace"]|| row.TYPE       || row.Type   || vals[2] || "").toString().trim(),
-                                    annee:       (row["Année"]     || row.ANNEE      || row.annee  || "").toString().trim(),
-                                    chassis:     (row["Châssis"]   || row.CHASSIS    || row.chassis || "").toString().trim().toUpperCase(),
-                                    categorie:   (row["Catégorie"] || row.CATEGORIE  || row.categorie || "").toString().trim().toUpperCase(),
-                                    local:       parsePrice(row["LOCAL & AUTRE"] || row["LOCAL&AUTRE"] || row.LOCAL || row.Local || vals[vals.length-3]),
-                                    euro:        parsePrice(row["Produit Européen"] || row["ProduitEuropéen"] || row.EUROPE || row.Europe || vals[vals.length-2]),
-                                    utilisateur: (row["Utilisateur"] || row.UTILISATEUR || "").toString().trim(),
-                                    date:        (row["Date"] || row.DATE || "").toString().trim()
-                                };
-                            }).filter(item => item.marque && item.modele);
+        function applyData(rows) {
+            data = rows;
+            populateFilters();
+            filterData();
+        }
 
-                            populateFilters();
-                            filterData();
-                        } catch(err) {
-                            document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-left text-sm font-bold text-red-600">Erreur de traitement des données:<br><pre class="text-xs mt-2">' + err.message + '</pre></td></tr>';
+        async function fetchFromNetwork() {
+            const base = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec?token=BETCAM_SECRET_9X";
+            for (const u of [base, "https://corsproxy.io/?" + base]) {
+                try {
+                    const res = await loadData(u);
+                    if (res && res.data && res.data.length > 0) {
+                        const parsed = parseRows(res.data);
+                        if (parsed.length > 0) {
+                            localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), rows: parsed }));
+                            return parsed;
                         }
-                })(results);
-            } catch (error) {
-                console.error("Erreur détaillée:", error);
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="p-10 text-left text-sm font-bold text-red-600">ERREUR TECHNIQUE DU CHARGEMENT:<br><pre class="text-xs text-slate-700 whitespace-pre-wrap mt-2">' + (error.message || error.toString()) + '</pre></td></tr>';
+                    }
+                } catch(e) {}
+            }
+            return null;
+        }
+
+        async function init() {
+            // ⚡ ÉTAPE 1 : Lecture instantanée du cache local
+            let cacheAge = Infinity;
+            try {
+                const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+                if (cached && cached.rows && cached.rows.length > 0) {
+                    cacheAge = Date.now() - cached.ts;
+                    applyData(cached.rows);
+                }
+            } catch(e) {}
+
+            // ⏳ Aucun cache : afficher le message de premier chargement
+            if (data.length === 0) {
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" class="py-12 text-center text-sm font-bold text-blue-600">⏳ Premier chargement... Veuillez patienter.</td></tr>';
+                const fresh = await fetchFromNetwork();
+                if (fresh) { applyData(fresh); }
+                else { document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" class="py-10 text-center text-sm font-bold text-red-500">❌ Erreur réseau. Vérifiez votre connexion.</td></tr>'; }
+            } else if (cacheAge > CACHE_TTL) {
+                // Cache expiré (> 12h) : rafraîchissement en arrière-plan
+                fetchFromNetwork().then(fresh => { if(fresh) applyData(fresh); }).catch(()=>{});
+            } else {
+                // Cache récent : rafraîchissement silencieux sans bloquer
+                setTimeout(() => {
+                    fetchFromNetwork().then(fresh => { if(fresh) applyData(fresh); }).catch(()=>{});
+                }, 3000);
             }
         }
 
