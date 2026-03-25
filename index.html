@@ -81,6 +81,12 @@
                     <label class="text-[10px] font-black text-indigo-600 uppercase ml-1">Mot d'accès</label>
                     <input type="password" id="loginPass" autocomplete="new-password" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20" placeholder="••••••••">
                 </div>
+                <div class="pt-1 px-1">
+                    <label class="flex items-center gap-2 cursor-pointer w-max">
+                        <input type="checkbox" id="rememberMe" class="w-4 h-4 accent-blue-600 rounded cursor-pointer border-slate-300">
+                        <span class="text-[11px] font-bold text-slate-500 select-none">Se souvenir de moi</span>
+                    </label>
+                </div>
                 <p id="loginError" class="text-xs font-bold text-red-500 text-center hidden">Identifiants incorrects</p>
                 <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-3.5 rounded-xl text-sm font-black uppercase shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition duration-200">Se Connecter</button>
             </div>
@@ -270,6 +276,16 @@
             const loginBtn = document.querySelector('#loginScreen button');
             if(loginBtn) { loginBtn.innerText = "CONNEXION AU RÉSEAU..."; loginBtn.disabled = true; }
             
+            // Recharger les identifiants
+            try {
+                const sv = JSON.parse(localStorage.getItem('zm_remember'));
+                if(sv && sv.user) {
+                    document.getElementById('loginUser').value = sv.user;
+                    document.getElementById('loginPass').value = sv.pass;
+                    document.getElementById('rememberMe').checked = true;
+                }
+            } catch(e){}
+
             const secureUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec?token=BETCAM_SECRET_9X&action=getUsers";
             try {
                 const res = await fetch(secureUrl);
@@ -288,14 +304,24 @@
 
         function checkLogin() {
             const user = document.getElementById('loginUser').value.toUpperCase().trim();
-            const pass = document.getElementById('loginPass').value.toUpperCase().trim();
-            
-            // COMPTE ADMINISTRATEUR
-            if(user === "BETCAM" && pass === "EXPERT2026") {
-                isAdmin = true;
-                userCanManage = true;
+            const pass = document.getElementById('loginPass').value.trim(); // Mot de passe respecte la casse initialement (ou uppercase si vous préférez)
+            const remChecked = document.getElementById('rememberMe').checked;
+
+            const handleLoginSuccess = () => {
+                if (remChecked) {
+                    localStorage.setItem('zm_remember', JSON.stringify({ user, pass }));
+                } else {
+                    localStorage.removeItem('zm_remember');
+                }
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
+            };
+            
+            // COMPTE ADMINISTRATEUR
+            if(user === "BETCAM" && pass.toUpperCase() === "EXPERT2026") {
+                isAdmin = true;
+                userCanManage = true;
+                handleLoginSuccess();
                 
                 // S'assurer que les boutons admin sont visibles (corrige les bugs de déco/reco)
                 const adminBtns = document.getElementById('adminButtons');
@@ -310,12 +336,12 @@
             }
 
             // COMPTES UTILISATEURS (Depuis Google Sheets)
-            const found = dbUsers.find(u => u.id.toUpperCase() === user && u.pass.toUpperCase() === pass);
-            if (found) {
+            const found = dbUsers.find(u => u.id.toUpperCase() === user && u.pass === pass);
+            if (found || dbUsers.find(u => u.id.toUpperCase() === user && u.pass.toUpperCase() === pass.toUpperCase())) {
+                const theFound = found || dbUsers.find(u => u.id.toUpperCase() === user && u.pass.toUpperCase() === pass.toUpperCase()); // Tolérance majuscules
                 isAdmin = false;
-                userCanManage = (String(found.add)==='true'||found.add===true);
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
+                userCanManage = (String(theFound.add)==='true'||theFound.add===true);
+                handleLoginSuccess();
                 
                 document.getElementById('adminButtons').classList.add('hidden');
                 
@@ -360,7 +386,8 @@
             // Afficher exactement 8 cases
             const slots = [];
             for (let i = 0; i < 8; i++) {
-                slots.push(dbUsers[i] || { id: "USER"+(i+1), pass: "PASS"+(i+1), add: false, excel: false, pdf: false });
+                // S'il n'y a pas d'utilisateur pour cet emplacement, on laisse les cases complètement vides
+                slots.push(dbUsers[i] || { id: "", pass: "", add: false, excel: false, pdf: false });
             }
             
             list.innerHTML = slots.map((u, i) => `
@@ -369,11 +396,11 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div class="space-y-1">
                             <label class="text-[10px] font-black text-slate-400 uppercase">Identifiant</label>
-                            <input id="uid_${i}" value="${u.id}" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold uppercase bg-white outline-none focus:ring-2 focus:ring-blue-500/20">
+                            <input id="uid_${i}" value="${u.id}" placeholder="ID" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold uppercase bg-white outline-none focus:ring-2 focus:ring-blue-500/20">
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-black text-slate-400 uppercase">Mot de passe</label>
-                            <input id="upass_${i}" value="${u.pass}" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500/20">
+                            <input id="upass_${i}" value="${u.pass}" placeholder="Mot de passe" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500/20">
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-4 pt-1">
@@ -403,14 +430,20 @@
 
             const newUsers = [];
             for (let i = 0; i < 8; i++) {
-                newUsers.push({
-                    id: document.getElementById('uid_' + i).value.toUpperCase().trim(),
-                    name: "Utilisateur " + (i+1),
-                    pass: document.getElementById('upass_' + i).value.trim(),
-                    add: document.getElementById('uadd_' + i).checked,
-                    excel: document.getElementById('uexcel_' + i).checked,
-                    pdf: document.getElementById('updf_' + i).checked
-                });
+                const uId = document.getElementById('uid_' + i).value.toUpperCase().trim();
+                const uPass = document.getElementById('upass_' + i).value.trim();
+                
+                // Ne sauvegarder la ligne QUE si l'identifiant ET le mot de passe sont remplis
+                if (uId !== "" && uPass !== "") {
+                    newUsers.push({
+                        id: uId,
+                        name: "Utilisateur",
+                        pass: uPass,
+                        add: document.getElementById('uadd_' + i).checked,
+                        excel: document.getElementById('uexcel_' + i).checked,
+                        pdf: document.getElementById('updf_' + i).checked
+                    });
+                }
             }
 
             const scriptUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec";
@@ -564,7 +597,7 @@
                     <td class="px-6 py-4" data-label="Véhicule">
                         <div class="flex flex-col">
                             <span class="text-[13px] font-extrabold text-slate-800 group-hover:text-blue-700 transition-colors">${item.marque}</span>
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-tight mt-0.5">${item.modele}</span>
+                            <span class="text-[11px] font-black text-rose-500 uppercase tracking-wide mt-0.5">${item.modele}</span>
                         </div>
                     </td>
                     <td class="px-6 py-4 text-center" data-label="Type">
