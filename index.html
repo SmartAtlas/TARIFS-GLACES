@@ -138,22 +138,31 @@
 
         <!-- Filters -->
         <div class="glass-card p-5 lg:p-6 grid grid-cols-1 md:grid-cols-12 gap-5 items-end bg-white/60">
-            <div class="col-span-1 md:col-span-4 space-y-2">
+            <div class="col-span-1 md:col-span-3 space-y-2">
                 <label class="text-[10px] font-black text-slate-500 uppercase flex items-center gap-1.5 ml-1"><svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Recherche</label>
                 <div class="relative">
                     <input type="text" id="search" oninput="filterData()" placeholder="Modèle, véhicule..." class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold placeholder-slate-400 outline-none text-slate-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
                 </div>
             </div>
-            <div class="col-span-1 md:col-span-3 space-y-2">
+            <div class="col-span-1 md:col-span-2 space-y-2">
                 <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Type de Glace</label>
                 <select id="typeFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
-                    <option value="ALL">TOUTES CATÉGORIES</option>
+                    <option value="ALL">TOUS LES TYPES</option>
                 </select>
             </div>
-            <div class="col-span-1 md:col-span-3 space-y-2">
+            <div class="col-span-1 md:col-span-2 space-y-2">
                 <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Constructeur</label>
                 <select id="brandFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
                     <option value="ALL">TOUTES MARQUES</option>
+                </select>
+            </div>
+            <div class="col-span-1 md:col-span-3 space-y-2">
+                <label class="text-[10px] font-black text-slate-500 uppercase ml-1">Catégorie BDG</label>
+                <select id="categorieFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
+                    <option value="ALL">TOUTES CATÉGORIES</option>
+                    <option value="ORIGINE">ORIGINE</option>
+                    <option value="RÉCUPÉRATION">RÉCUPÉRATION</option>
+                    <option value="ADAPTABLE">ADAPTABLE</option>
                 </select>
             </div>
             <div class="col-span-1 md:col-span-2">
@@ -171,8 +180,13 @@
                         <tr>
                             <th class="px-6 py-4 border-b border-slate-200"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Véhicule</span></th>
                             <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Type</span></th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Catégorie</span></th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Année</span></th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Châssis</span></th>
                             <th class="px-6 py-4 border-b border-slate-200 text-right"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Tarif Local</span></th>
                             <th class="px-6 py-4 border-b border-slate-200 text-right"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Tarif Europe</span></th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Ajouté Par</span></th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Date Saisie</span></th>
                             <th id="actionsHeader" class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Actions</span></th>
                         </tr>
                     </thead>
@@ -223,30 +237,55 @@
             <div class="p-6 space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
-                        <label class="text-[10px] font-black text-indigo-600 uppercase">Marque</label>
-                        <input type="text" id="m_marque" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase">
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Constructeur</label>
+                        <input type="text" id="m_marque" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                     </div>
                     <div class="space-y-1">
-                        <label class="text-[10px] font-black text-indigo-600 uppercase">Type</label>
-                        <select id="m_type" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold">
-                            <option value="Pare-Brise">Pare-Brise</option>
-                            <option value="Poids Lourds">Poids Lourds</option>
-                            <option value="Lunette Arrière">Lunette Arrière</option>
-                        </select>
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Modèle</label>
+                        <input type="text" id="m_modele" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                     </div>
                 </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-black text-indigo-600 uppercase">Modèle & Détails</label>
-                    <input type="text" id="m_modele" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Année / MEC</label>
+                        <input type="text" id="m_annee" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">N° Châssis</label>
+                        <input type="text" id="m_chassis" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Type de Glace</label>
+                        <select id="m_type" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                            <option value="PARE-BRISE">PARE-BRISE</option>
+                            <option value="LUNETTE ARRIÈRE">LUNETTE ARRIÈRE</option>
+                            <option value="CUSTODE">CUSTODE</option>
+                            <option value="VITRE A.D">VITRE A.D</option>
+                            <option value="VITRE A.G">VITRE A.G</option>
+                            <option value="VITRE AR.D">VITRE AR.D</option>
+                            <option value="VITRE AR.G">VITRE AR.G</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Catégorie BDG</label>
+                        <select id="m_categorie" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                            <option value="">(Non spécifié)</option>
+                            <option value="ORIGINE">ORIGINE</option>
+                            <option value="RÉCUPÉRATION">RÉCUPÉRATION</option>
+                            <option value="ADAPTABLE">ADAPTABLE</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Prix Local (DH)</label>
-                        <input type="number" id="m_local" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold">
+                        <input type="number" id="m_local" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-blue-500/20 outline-none">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Prix Europe (DH)</label>
-                        <input type="number" id="m_euro" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-blue-600">
+                        <input type="number" id="m_euro" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none">
                     </div>
                 </div>
             </div>
@@ -262,6 +301,7 @@
         let isAdmin = false;
         let userCanManage = false;
         let dbUsers = []; 
+        let currentUser = "";
 
         // Sauvegarde de secours s'il n'y a pas internet
         function loadUsersFallback() {
@@ -273,10 +313,10 @@
         }
 
         async function initUsers() {
-            const loginBtn = document.querySelector('#loginScreen button');
-            if(loginBtn) { loginBtn.innerText = "CONNEXION AU RÉSEAU..."; loginBtn.disabled = true; }
-            
-            // Recharger les identifiants
+            // 1. CHARGEMENT INSTANTANÉ depuis le cache local
+            dbUsers = loadUsersFallback();
+
+            // 2. Pré-remplir si "Se souvenir de moi"
             try {
                 const sv = JSON.parse(localStorage.getItem('zm_remember'));
                 if(sv && sv.user) {
@@ -286,17 +326,17 @@
                 }
             } catch(e){}
 
+            // 3. RAFRAÎCHISSEMENT SILENCIEUX en arrière-plan (sans bloquer le bouton)
             const secureUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec?token=BETCAM_SECRET_9X&action=getUsers";
-            try {
-                const res = await fetch(secureUrl);
-                dbUsers = await res.json();
-                localStorage.setItem("zm_users_fb", JSON.stringify(dbUsers)); // Cache
-            } catch(e) {
-                console.warn("Utilisation des utilisateurs locaux (mode hors-ligne).");
-                dbUsers = loadUsersFallback();
-            }
-            
-            if(loginBtn) { loginBtn.innerText = "SE CONNECTER"; loginBtn.disabled = false; }
+            fetch(secureUrl)
+                .then(res => res.json())
+                .then(users => {
+                    if(Array.isArray(users) && users.length > 0) {
+                        dbUsers = users;
+                        localStorage.setItem("zm_users_fb", JSON.stringify(dbUsers));
+                    }
+                })
+                .catch(() => {}); // Silencieux si pas de réseau
         }
 
         // Charger les utilisateurs dès l'ouverture
@@ -321,6 +361,7 @@
             if(user === "BETCAM" && pass.toUpperCase() === "EXPERT2026") {
                 isAdmin = true;
                 userCanManage = true;
+                currentUser = "BETCAM";
                 handleLoginSuccess();
                 
                 // S'assurer que les boutons admin sont visibles (corrige les bugs de déco/reco)
@@ -341,6 +382,7 @@
                 const theFound = found || dbUsers.find(u => u.id.toUpperCase() === user && u.pass.toUpperCase() === pass.toUpperCase()); // Tolérance majuscules
                 isAdmin = false;
                 userCanManage = (String(theFound.add)==='true'||theFound.add===true);
+                currentUser = theFound.id.toUpperCase();
                 handleLoginSuccess();
                 
                 document.getElementById('adminButtons').classList.add('hidden');
@@ -531,20 +573,24 @@
                                 const parsePrice = (priceStr) => {
                                     if (!priceStr) return 0;
                                     let s = String(priceStr);
-                                    // Remove spaces (thousands separators)
                                     s = s.replace(/\s/g, '');
-                                    // Replace comma with dot for decimals
                                     s = s.replace(',', '.');
-                                    // Remove any character that is not digit or dot
                                     s = s.replace(/[^\d.]/g, '');
                                     return parseFloat(s) || 0;
                                 };
+                                // Lecture par nom de colonne en priorité, positions en dernier recours
+                                const vals = Object.values(row);
                                 return {
-                                    marque: (row.Marque || row.MARQUE || Object.values(row)[0] || "").trim().toUpperCase(),
-                                    modele: (row.Models || row.MODELE || Object.values(row)[1] || "").trim(),
-                                    type: (row["Type Glace"] || row["TYPE"] || Object.values(row)[2] || "Pare-Brise").trim(),
-                                    local: parsePrice(row["LOCAL & AUTRE"] || row["LOCAL&AUTRE"] || Object.values(row)[4]),
-                                    euro: parsePrice(row["Produit Européen"] || row["ProduitEuropéen"] || Object.values(row)[5])
+                                    marque:      (row.Marque      || row.MARQUE      || vals[0] || "").toString().trim().toUpperCase(),
+                                    modele:      (row.Models      || row.MODELE      || row.Modele || vals[1] || "").toString().trim(),
+                                    type:        (row["Type Glace"]|| row.TYPE       || row.Type   || vals[2] || "").toString().trim(),
+                                    annee:       (row["Année"]     || row.ANNEE      || row.annee  || "").toString().trim(),
+                                    chassis:     (row["Châssis"]   || row.CHASSIS    || row.chassis || "").toString().trim().toUpperCase(),
+                                    categorie:   (row["Catégorie"] || row.CATEGORIE  || row.categorie || "").toString().trim().toUpperCase(),
+                                    local:       parsePrice(row["LOCAL & AUTRE"] || row["LOCAL&AUTRE"] || row.LOCAL || row.Local || vals[vals.length-3]),
+                                    euro:        parsePrice(row["Produit Européen"] || row["ProduitEuropéen"] || row.EUROPE || row.Europe || vals[vals.length-2]),
+                                    utilisateur: (row["Utilisateur"] || row.UTILISATEUR || "").toString().trim(),
+                                    date:        (row["Date"] || row.DATE || "").toString().trim()
                                 };
                             }).filter(item => item.marque && item.modele);
 
@@ -575,12 +621,14 @@
             const search = document.getElementById('search').value.toLowerCase();
             const type = document.getElementById('typeFilter').value;
             const brand = document.getElementById('brandFilter').value;
+            const categorie = document.getElementById('categorieFilter').value;
 
             const filtered = data.filter(item => {
-                const matchSearch = item.marque.toLowerCase().includes(search) || item.modele.toLowerCase().includes(search);
+                const matchSearch = item.marque.toLowerCase().includes(search) || item.modele.toLowerCase().includes(search) || (item.chassis||'').toLowerCase().includes(search);
                 const matchType = type === "ALL" || item.type === type;
                 const matchBrand = brand === "ALL" || item.marque === brand;
-                return matchSearch && matchType && matchBrand;
+                const matchCat = categorie === "ALL" || (item.categorie||'').toUpperCase() === categorie;
+                return matchSearch && matchType && matchBrand && matchCat;
             });
 
             renderTable(filtered);
@@ -601,15 +649,28 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 text-center" data-label="Type">
-                        <span class="inline-flex items-center px-2.5 py-1 bg-slate-100 text-[9px] font-black uppercase tracking-widest text-slate-600 rounded border border-slate-200/60">
-                            ${item.type}
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-1 bg-slate-100 text-[9px] font-black uppercase tracking-widest text-slate-600 rounded border border-slate-200/60">${item.type || '-'}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center" data-label="Catégorie">
+                        ${item.categorie ? `<span class="inline-flex items-center px-2.5 py-1 bg-indigo-50 text-[9px] font-black uppercase tracking-widest text-indigo-600 rounded border border-indigo-100">${item.categorie}</span>` : `<span class="text-[10px] text-slate-300">-</span>`}
+                    </td>
+                    <td class="px-6 py-4 text-center" data-label="Année">
+                        <span class="text-[11px] font-bold text-slate-600">${item.annee || '-'}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center" data-label="Châssis">
+                        <span class="text-[10px] font-bold text-slate-500 font-mono">${item.chassis || '-'}</span>
                     </td>
                     <td class="px-6 py-4 text-right" data-label="Local">
                         <span class="text-sm font-black text-slate-700">${(item.local || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-[9px] font-bold text-slate-400 ml-0.5">DH</span></span>
                     </td>
                     <td class="px-6 py-4 text-right" data-label="Europe">
                         <span class="text-sm font-black text-blue-600">${(item.euro || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-[9px] font-bold text-blue-400/70 ml-0.5">DH</span></span>
+                    </td>
+                    <td class="px-6 py-4 text-center" data-label="Ajouté par">
+                        ${item.utilisateur ? `<span class="text-[9px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-1 rounded-md uppercase tracking-widest">${item.utilisateur}</span>` : `<span class="text-[10px] text-slate-300">-</span>`}
+                    </td>
+                    <td class="px-6 py-4 text-center" data-label="Date">
+                        <span class="text-[10px] font-bold text-slate-500">${item.date || '-'}</span>
                     </td>
                     <td class="px-6 py-4 text-center" data-label="Actions">
                         ${userCanManage ? `
@@ -631,10 +692,9 @@
         function openAddModal() {
             currentEditIndex = null;
             document.getElementById('modalTitle').innerText = "Ajouter un Modèle";
-            document.getElementById('m_marque').value = "";
-            document.getElementById('m_modele').value = "";
-            document.getElementById('m_local').value = "";
-            document.getElementById('m_euro').value = "";
+            ['m_marque','m_modele','m_annee','m_chassis','m_local','m_euro'].forEach(id => document.getElementById(id).value = "");
+            document.getElementById('m_type').value = "PARE-BRISE";
+            document.getElementById('m_categorie').value = "";
             document.getElementById('modal').classList.remove('hidden');
         }
 
@@ -644,19 +704,30 @@
             document.getElementById('modalTitle').innerText = "Modifier le Modèle";
             document.getElementById('m_marque').value = item.marque;
             document.getElementById('m_modele').value = item.modele;
+            document.getElementById('m_annee').value = item.annee || "";
+            document.getElementById('m_chassis').value = item.chassis || "";
             document.getElementById('m_type').value = item.type;
+            document.getElementById('m_categorie').value = item.categorie || "";
             document.getElementById('m_local').value = item.local || 0;
             document.getElementById('m_euro').value = item.euro || 0;
             document.getElementById('modal').classList.remove('hidden');
         }
 
         async function saveItem() {
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            
             const newItem = {
                 marque: document.getElementById('m_marque').value.toUpperCase().trim(),
                 modele: document.getElementById('m_modele').value.trim(),
+                annee: document.getElementById('m_annee').value.trim(),
+                chassis: document.getElementById('m_chassis').value.toUpperCase().trim(),
                 type: document.getElementById('m_type').value,
+                categorie: document.getElementById('m_categorie').value,
                 local: parseInt(document.getElementById('m_local').value) || 0,
-                euro: parseInt(document.getElementById('m_euro').value) || 0
+                euro: parseInt(document.getElementById('m_euro').value) || 0,
+                utilisateur: currentUser, // Auteur
+                date: dateStr             // Date de saisie automatique
             };
 
             if(!newItem.marque || !newItem.modele) {
@@ -714,7 +785,17 @@
 
         // EXPORTS
         function exportExcel() {
-            const ws = XLSX.utils.json_to_sheet(data);
+            const ws = XLSX.utils.json_to_sheet(data.map(i => ({
+                "Marque": i.marque,
+                "Modèle": i.modele,
+                "Année": i.annee || "",
+                "N° Châssis": i.chassis || "",
+                "Type Glace": i.type,
+                "Catégorie BDG": i.categorie || "",
+                "Tarif Local (DH)": i.local,
+                "Tarif Europe (DH)": i.euro,
+                "Ajouté Par": i.utilisateur || ""
+            })));
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Tarifs_ZAM");
             XLSX.writeFile(wb, "Tarifs_Des_Glaces_ZAM.xlsx");
@@ -741,19 +822,22 @@
             const tableRows = data.map(i => [
                 i.marque, 
                 i.modele, 
+                i.annee || "-",
+                i.chassis || "-",
                 i.type, 
+                i.categorie || "-",
                 (i.local || 0).toFixed(2).replace('.', ','), 
                 (i.euro || 0).toFixed(2).replace('.', ',')
             ]);
             
             doc.autoTable({
-                head: [['Marque', 'Modèle', 'Type', 'Local (DH)', 'Europe (DH)']],
+                head: [['Marque', 'Modèle', 'Année', 'Châssis', 'Type', 'Catégorie', 'Local', 'Europe']],
                 body: tableRows,
                 startY: 25,
-                styles: { fontSize: 7 },
+                styles: { fontSize: 6 },
                 columnStyles: {
-                    3: { halign: 'right' },
-                    4: { halign: 'right' }
+                    6: { halign: 'right' },
+                    7: { halign: 'right' }
                 },
                 headStyles: {
                     fillColor: [30, 63, 159], // Un beau bleu professionnel classique
