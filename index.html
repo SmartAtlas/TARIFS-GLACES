@@ -1,137 +1,323 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZAM - GESTIONNAIRE DE TARIFS PRO</title>
+    <title>BETCAM - TARIFS BDG</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>💎</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; color: #0f172a; }
-        .glass-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02), 0 8px 10px -6px rgba(0, 0, 0, 0.01); }
-        .btn-action { transition: all 0.25s ease; display: inline-flex; align-items: center; justify-content: center; }
-        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.05); }
-        .btn-action:active { transform: translateY(0); }
-        
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; border: 2px solid #f1f5f9; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Pinyon+Script&display=swap"
+        rel="stylesheet">
 
-        input, select { transition: all 0.2s ease; }
-        input:focus, select:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        }
+
+        .btn-action {
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        .btn-action:active {
+            transform: translateY(0);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+            border: 2px solid #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        input,
+        select {
+            transition: all 0.2s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
 
         /* ───── MOBILE ───── */
         @media (max-width: 768px) {
-            table, thead, tbody, th, td, tr { display: block; }
-            thead tr { position: absolute; top: -9999px; left: -9999px; }
-            
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
             /* Cartes compactes avec bordure gauche colorée */
-            tr { border-radius: 0.6rem; padding: 0.1rem 0; margin-bottom: 0.35rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); background: #fff; border: 1px solid #e2e8f0; border-left-width: 4px; }
+            tr {
+                border-radius: 0.6rem;
+                padding: 0.1rem 0;
+                margin-bottom: 0.35rem;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+                background: #fff;
+                border: 1px solid #e2e8f0;
+                border-left-width: 4px;
+            }
 
             /* Lignes internes serrées */
-            td { border: none !important; position: relative; padding-left: 42% !important; padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; text-align: right !important; min-height: 24px; font-size: 0.75rem; border-bottom: 1px solid rgba(0,0,0,0.03) !important; }
-            td:last-child { border-bottom: none !important; }
-            td:before { content: attr(data-label); position: absolute; left: 0.6rem; width: 38%; font-weight: 800; text-align: left; font-size: 0.58rem; color: #4338ca; text-transform: uppercase; top: 50%; transform: translateY(-50%); }
-            
+            td {
+                border: none !important;
+                position: relative;
+                padding-left: 42% !important;
+                padding-top: 0.25rem !important;
+                padding-bottom: 0.25rem !important;
+                text-align: right !important;
+                min-height: 24px;
+                font-size: 0.75rem;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.03) !important;
+            }
+
+            td:last-child {
+                border-bottom: none !important;
+            }
+
+            td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0.6rem;
+                width: 38%;
+                font-weight: 800;
+                text-align: left;
+                font-size: 0.58rem;
+                color: #4338ca;
+                text-transform: uppercase;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
             /* Filtres ultra-compacts sur mobile */
-            .filter-mobile { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
-            .filter-mobile .filter-full { grid-column: 1 / -1; }
-            .filter-mobile select, .filter-mobile input { padding: 0.4rem 0.6rem !important; font-size: 0.72rem !important; border-radius: 0.6rem !important; }
-            .filter-mobile label { font-size: 0.55rem !important; }
-            
-            #adminButtons { flex-direction: column; width: 100%; }
-            #adminButtons button, .btn-action { width: 100%; margin-bottom: 0.4rem;}
-            #propsModal > div, #modal > div { max-width: 95% !important; margin: auto; border-radius: 1.25rem; max-height: 90vh; overflow-y: auto; }
-            #loginScreen > div { max-width: 92%; padding: 1.5rem; }
+            .filter-mobile {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.4rem;
+            }
+
+            .filter-mobile .filter-full {
+                grid-column: 1 / -1;
+            }
+
+            .filter-mobile select,
+            .filter-mobile input {
+                padding: 0.4rem 0.6rem !important;
+                font-size: 0.72rem !important;
+                border-radius: 0.6rem !important;
+            }
+
+            .filter-mobile label {
+                font-size: 0.55rem !important;
+            }
+
+            #adminButtons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            #adminButtons button,
+            .btn-action {
+                width: 100%;
+                margin-bottom: 0.4rem;
+            }
+
+            #propsModal>div,
+            #modal>div {
+                max-width: 95% !important;
+                margin: auto;
+                border-radius: 1.25rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            #loginScreen>div {
+                max-width: 92%;
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
+
 <body class="p-3 md:p-6 lg:p-8 min-h-screen relative selection:bg-blue-100 selection:text-blue-900">
     <!-- Watermark Anti-Vol -->
-    <div class="fixed inset-0 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.03] z-[-1]">
-        <span class="text-[150px] md:text-[250px] font-black uppercase -rotate-45 select-none whitespace-nowrap text-slate-900">BETCAM</span>
+    <div
+        class="fixed inset-0 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.03] z-[-1]">
+        <span
+            class="text-[150px] md:text-[250px] font-black uppercase -rotate-45 select-none whitespace-nowrap text-slate-900">BETCAM</span>
     </div>
 
     <!-- ÉCRAN DE CONNEXION -->
-    <div id="loginScreen" class="fixed inset-0 bg-slate-900/40 z-[100] flex items-center justify-center p-4 backdrop-blur-xl">
-        <div class="bg-white rounded-[2rem] w-full max-w-sm shadow-2xl p-10 space-y-8 border border-white/20 relative overflow-hidden">
+    <div id="loginScreen"
+        class="fixed inset-0 bg-slate-900/40 z-[100] flex items-center justify-center p-4 backdrop-blur-xl">
+        <div
+            class="bg-white rounded-[2rem] w-full max-w-sm shadow-2xl p-10 space-y-8 border border-white/20 relative overflow-hidden">
             <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
             <div class="text-center space-y-3 relative z-10">
-                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 h-20 w-20 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/30 transform -rotate-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white transform rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <div
+                    class="bg-gradient-to-br from-blue-500 to-indigo-600 h-20 w-20 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/30 transform -rotate-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white transform rotate-3" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                 </div>
-                <h2 class="text-3xl font-black text-slate-800 tracking-tight">Espace <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">ZAM</span></h2>
-                <div class="inline-block bg-rose-50 border border-rose-100 px-3 py-1 rounded-full">
-                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Édition Cabinet BETCAM</p>
+                <p class="text-3xl font-normal text-emerald-500 mb-0.5" style="font-family: 'Pinyon Script', cursive;">
+                    <span class="text-5xl">B</span>ienvenue dans votre</p>
+                <h2 class="text-3xl font-black text-slate-800 tracking-tight uppercase">ESPACE <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">BDG</span>
+                </h2>
+                <div class="space-y-1">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Base de Données v2.5</p>
+                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Édition Master BETCAM</p>
                 </div>
             </div>
-            
+
             <div class="space-y-4 pt-4">
                 <div class="space-y-1">
                     <label class="text-[10px] font-black text-indigo-600 uppercase ml-1">Identifiant</label>
-                    <input type="text" id="loginUser" autocomplete="off" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 uppercase" placeholder="Votre identifiant">
+                    <input type="text" id="loginUser" autocomplete="off"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20 uppercase"
+                        placeholder="Votre identifiant">
                 </div>
                 <div class="space-y-1">
                     <label class="text-[10px] font-black text-indigo-600 uppercase ml-1">Mot d'accès</label>
-                    <input type="password" id="loginPass" autocomplete="new-password" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20" placeholder="••••••••">
+                    <input type="password" id="loginPass" autocomplete="new-password"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500/20"
+                        placeholder="••••••••">
                 </div>
                 <div class="pt-1 px-1">
                     <label class="flex items-center gap-2 cursor-pointer w-max">
-                        <input type="checkbox" id="rememberMe" class="w-4 h-4 accent-blue-600 rounded cursor-pointer border-slate-300">
+                        <input type="checkbox" id="rememberMe"
+                            class="w-4 h-4 accent-blue-600 rounded cursor-pointer border-slate-300">
                         <span class="text-[11px] font-bold text-slate-500 select-none">Se souvenir de moi</span>
                     </label>
                 </div>
                 <p id="loginError" class="text-xs font-bold text-red-500 text-center hidden">Identifiants incorrects</p>
-                <button onclick="checkLogin()" class="w-full bg-blue-600 text-white py-3.5 rounded-xl text-sm font-black uppercase shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition duration-200">Se Connecter</button>
+                <button onclick="checkLogin()"
+                    class="w-full bg-blue-600 text-white py-3.5 rounded-xl text-sm font-black uppercase shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition duration-200">Se
+                    Connecter</button>
             </div>
         </div>
     </div>
 
-    
-<div id="mainApp" class="max-w-7xl mx-auto space-y-6 hidden">
-        
+
+    <div id="mainApp" class="max-w-7xl mx-auto space-y-6 hidden">
+
         <!-- Header -->
         <div class="glass-card p-5 xl:p-6 flex flex-col xl:flex-row justify-between items-center gap-5">
             <div class="flex items-center gap-5 w-full xl:w-auto">
-                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-4 rounded-[1.25rem] shadow-lg shadow-blue-500/30 flex-shrink-0 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-8 h-8 bg-white/10 rounded-full blur-md transform translate-x-3 -translate-y-3"></div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <div
+                    class="bg-gradient-to-br from-blue-600 to-indigo-700 p-4 rounded-[1.25rem] shadow-lg shadow-blue-500/30 flex-shrink-0 relative overflow-hidden">
+                    <div
+                        class="absolute top-0 right-0 w-8 h-8 bg-white/10 rounded-full blur-md transform translate-x-3 -translate-y-3">
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white relative z-10" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight uppercase">TARIFS DES GLACES <span class="text-blue-600">ZAM</span></h1>
-                    <div class="flex flex-wrap items-center gap-2 mt-1">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 px-2.5 py-1 rounded-md">Base de Données v2.3</span>
-                        <span class="text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-2.5 py-1 rounded-md border border-rose-100">Édition Master BETCAM</span>
+                    <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight uppercase">TARIFS DES GLACES
+                        <span class="text-blue-600">ZAM</span></h1>
+                    <div class="flex flex-col gap-1 mt-1.5 ml-0.5">
+                        <span
+                            class="text-[9px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded-md w-max">Base
+                            de Données v2.5</span>
+                        <span
+                            class="text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100 w-max shadow-sm">Édition
+                            Master BETCAM</span>
                     </div>
                 </div>
             </div>
 
             <div class="flex flex-wrap gap-2 w-full xl:w-auto justify-start xl:justify-end mt-2 xl:mt-0">
                 <div id="adminButtons" class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
-                    <button onclick="openAddModal()" class="btn-action bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg shadow-emerald-500/20 border border-emerald-600">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    <button onclick="openAddModal()"
+                        class="btn-action bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg shadow-emerald-500/20 border border-emerald-600">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4">
+                            </path>
+                        </svg>
                         Nouveau
                     </button>
-                    <button onclick="exportExcel()" class="btn-action bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <button onclick="exportExcel()"
+                        class="btn-action bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm">
+                        <svg class="w-4 h-4 mr-1.5 text-emerald-600" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
                         Excel
                     </button>
-                    <button onclick="exportPDF()" class="btn-action bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    <button onclick="exportPDF()"
+                        class="btn-action bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm">
+                        <svg class="w-4 h-4 mr-1.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                            </path>
+                        </svg>
                         PDF
                     </button>
-                    <button onclick="openPropsModal()" class="btn-action bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg shadow-slate-800/20">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <button onclick="openPropsModal()"
+                        class="btn-action bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg shadow-slate-800/20">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
                         Admin
                     </button>
                 </div>
@@ -141,52 +327,106 @@
         <!-- Filters -->
         <div class="glass-card p-4 md:p-5 lg:p-6 bg-white/60">
 
-            <!-- ═══ PC : ligne horizontale ═══ -->
-            <div class="hidden md:flex md:flex-row gap-3 items-end">
-                <div class="flex-1 space-y-1">
-                    <label class="text-[8px] font-black text-slate-500 uppercase flex items-center gap-1 ml-1">
-                        <svg class="w-2.5 h-2.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Recherche
+            <!-- ═══ PC : ligne horizontale Esthétique ═══ -->
+            <div class="hidden md:flex md:flex-row gap-4 items-end">
+                <div class="flex-1 space-y-1.5 group">
+                    <label
+                        class="text-[8px] font-black text-blue-600 uppercase flex items-center gap-1.5 ml-1 drop-shadow-[0_1px_1px_rgba(37,99,235,0.1)]">
+                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg> Recherche intelligente
                     </label>
-                    <input type="text" id="search" oninput="filterData()" placeholder="Modèle, véhicule, châssis..." class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-[10px] font-bold placeholder-slate-400 outline-none text-slate-800 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
+                    <div class="relative">
+                        <input type="text" id="search" oninput="filterData()"
+                            placeholder="Tapez modèle, marque ou châssis..."
+                            class="w-full bg-blue-50/40 border border-blue-100 rounded-xl pl-9 pr-4 py-2 text-[10px] font-bold placeholder-slate-400 outline-none text-slate-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-sm shadow-blue-500/5">
+                        <svg class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-blue-400/70" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
                 </div>
-                <div class="w-40 space-y-1">
-                    <label class="text-[8px] font-black text-slate-500 uppercase ml-1">Type de Glace</label>
-                    <select id="typeFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
-                        <option value="ALL">TOUS LES TYPES</option>
-                    </select>
+
+                <div class="w-44 space-y-1.5 group">
+                    <label
+                        class="text-[8px] font-black text-indigo-600 uppercase ml-1 drop-shadow-[0_1px_1px_rgba(79,70,229,0.1)]">Type
+                        de Glace</label>
+                    <div class="relative">
+                        <select id="typeFilter" onchange="filterData()"
+                            class="w-full bg-indigo-50/40 border border-indigo-100 rounded-xl px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all appearance-none cursor-pointer shadow-sm shadow-indigo-500/5">
+                            <option value="ALL">TOUS LES TYPES</option>
+                        </select>
+                        <svg class="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 text-indigo-400/70 pointer-events-none"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
-                <div class="w-40 space-y-1">
-                    <label class="text-[8px] font-black text-slate-500 uppercase ml-1">Constructeur</label>
-                    <select id="brandFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
-                        <option value="ALL">TOUTES MARQUES</option>
-                    </select>
+
+                <div class="w-44 space-y-1.5 group">
+                    <label
+                        class="text-[8px] font-black text-emerald-600 uppercase ml-1 drop-shadow-[0_1px_1px_rgba(5,150,105,0.1)]">Marque</label>
+                    <div class="relative">
+                        <select id="brandFilter" onchange="filterData()"
+                            class="w-full bg-emerald-50/40 border border-emerald-100 rounded-xl px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all appearance-none cursor-pointer shadow-sm shadow-emerald-500/5">
+                            <option value="ALL">TOUTES MARQUES</option>
+                        </select>
+                        <svg class="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400/70 pointer-events-none"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
-                <div class="w-40 space-y-1">
-                    <label class="text-[8px] font-black text-slate-500 uppercase ml-1">Catégorie BRIS</label>
-                    <select id="categorieFilter" onchange="filterData()" class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500">
-                        <option value="ALL">TOUTES CATÉGORIES</option>
-                        <option value="ORIGINE">ORIGINE</option>
-                        <option value="ADAPTABLE">ADAPTABLE</option>
-                    </select>
+
+                <div class="w-44 space-y-1.5 group">
+                    <label
+                        class="text-[8px] font-black text-rose-600 uppercase ml-1 drop-shadow-[0_1px_1px_rgba(225,29,72,0.1)]">Catégorie
+                        BRIS</label>
+                    <div class="relative">
+                        <select id="categorieFilter" onchange="filterData()"
+                            class="w-full bg-rose-50/40 border border-rose-100 rounded-xl px-3 py-2 text-[10px] font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all appearance-none cursor-pointer shadow-sm shadow-rose-500/5">
+                            <option value="ALL">TOUTES CATÉGORIES</option>
+                            <option value="ORIGINE">ORIGINE</option>
+                            <option value="ADAPTABLE">ADAPTABLE</option>
+                        </select>
+                        <svg class="w-3 h-3 absolute right-3 top-1/2 -translate-y-1/2 text-rose-400/70 pointer-events-none"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
+
                 <div class="w-28 shrink-0">
-                    <div class="bg-gradient-to-br from-indigo-50 to-blue-50 h-[34px] rounded-lg flex items-center justify-center border border-indigo-100/60 shadow-inner">
-                        <span id="countLabel" class="text-[9px] font-black tracking-widest text-indigo-700 uppercase">0 RÉSULTATS</span>
+                    <div
+                        class="bg-gradient-to-br from-blue-600 to-indigo-700 h-[34px] rounded-xl flex items-center justify-center border border-blue-400/20 shadow-lg shadow-blue-500/20">
+                        <span id="countLabel" class="text-[9px] font-black tracking-widest text-white uppercase">0
+                            RÉSULTATS</span>
                     </div>
                 </div>
             </div>
 
             <!-- ═══ MOBILE : grille 2×2 compacte ═══ -->
             <div class="md:hidden space-y-2">
-                <input type="text" id="search_m" oninput="document.getElementById('search').value=this.value;filterData()" placeholder="🔍 Modèle, marque, châssis..." class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold placeholder-slate-400 outline-none focus:border-blue-400">
+                <input type="text" id="search_m"
+                    oninput="document.getElementById('search').value=this.value;filterData()"
+                    placeholder="🔍 Modèle, marque, châssis..."
+                    class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold placeholder-slate-400 outline-none focus:border-blue-400">
                 <div class="grid grid-cols-2 gap-2">
-                    <select id="typeFilter_m" onchange="document.getElementById('typeFilter').value=this.value;filterData()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                    <select id="typeFilter_m"
+                        onchange="document.getElementById('typeFilter').value=this.value;filterData()"
+                        class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
                         <option value="ALL">TYPE: TOUS</option>
                     </select>
-                    <select id="brandFilter_m" onchange="document.getElementById('brandFilter').value=this.value;filterData()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                    <select id="brandFilter_m"
+                        onchange="document.getElementById('brandFilter').value=this.value;filterData()"
+                        class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
                         <option value="ALL">MARQUE: TOUTES</option>
                     </select>
-                    <select id="categorieFilter_m" onchange="document.getElementById('categorieFilter').value=this.value;filterData()" class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                    <select id="categorieFilter_m"
+                        onchange="document.getElementById('categorieFilter').value=this.value;filterData()"
+                        class="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-700 outline-none">
                         <option value="ALL">CATÉG BRIS: TOUTES</option>
                         <option value="ORIGINE">ORIGINE</option>
                         <option value="ADAPTABLE">ADAPTABLE</option>
@@ -203,60 +443,105 @@
         <div class="glass-card overflow-hidden border border-slate-200/60 bg-white">
             <div class="overflow-auto max-h-[60vh] lg:max-h-[65vh]">
                 <table class="w-full relative text-left border-collapse">
-                    <thead class="bg-slate-50/95 backdrop-blur-md sticky top-0 z-20 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+                    <thead
+                        class="bg-slate-50/95 backdrop-blur-md sticky top-0 z-20 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
                         <tr>
-                            <th class="px-6 py-4 border-b border-slate-200"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Véhicule</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Type</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Catégorie</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Année</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Châssis</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-right"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Tarif Local</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-right"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Tarif Europe</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Ajouté Par</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Date Saisie</span></th>
-                            <th id="actionsHeader" class="px-6 py-4 border-b border-slate-200 text-center"><span class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Actions</span></th>
+                            <th class="px-6 py-4 border-b border-slate-200"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Véhicule</span>
+                            </th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Type</span>
+                            </th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Catégorie</span>
+                            </th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Année</span>
+                            </th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Châssis</span>
+                            </th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-right"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Tarif
+                                    Local</span></th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-right"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Tarif
+                                    Europe</span></th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Ajouté
+                                    Par</span></th>
+                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Date
+                                    Saisie</span></th>
+                            <th id="actionsHeader" class="px-6 py-4 border-b border-slate-200 text-center"><span
+                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Actions</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
-            <div id="noData" class="hidden py-24 text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4 shadow-inner">
-                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div id="noData" class="hidden py-16 text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 mb-4">
+                    <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
                 </div>
-                <h3 class="text-sm font-black text-slate-700 uppercase tracking-tight">Aucun véhicule trouvé</h3>
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-2">Essayez de modifier vos filtres</p>
+                <h3 class="text-xs font-black text-slate-700 uppercase">Aucun résultat</h3>
             </div>
         </div>
+
+        <!-- Footer Offre -->
+        <footer class="text-center pt-8 pb-12 space-y-2">
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Logiciel de Gestion Propriétaire ·
+                BETCAM Experts</p>
+            <div class="flex items-center justify-center gap-3">
+                <span class="h-px w-8 bg-slate-200"></span>
+                <span class="text-[10px] font-black text-rose-600 uppercase tracking-widest">Édition Master
+                    BETCAM</span>
+                <span class="h-px w-8 bg-slate-200"></span>
+            </div>
+            <p class="text-[7px] font-bold text-slate-300 uppercase tracking-[0.2em]">© 2026. Tous droits réservés.</p>
+        </footer>
     </div>
 
 
     <!-- MODAL PROPRIÉTÉS ADMIN -->
-    <div id="propsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="propsModal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center">
                 <div>
                     <h3 class="text-lg font-black text-slate-900 uppercase">⚙ Propriétés · Gestion Utilisateurs</h3>
-                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mt-0.5">Réservé à l'Administrateur BETCAM</p>
+                    <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mt-0.5">Réservé à
+                        l'Administrateur BETCAM</p>
                 </div>
-                <button onclick="closePropsModal()" class="p-2 bg-slate-100 rounded-lg text-slate-500 hover:bg-slate-200 font-black">✕</button>
+                <button onclick="closePropsModal()"
+                    class="p-2 bg-slate-100 rounded-lg text-slate-500 hover:bg-slate-200 font-black">✕</button>
             </div>
             <div class="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
-                <p class="text-xs font-black text-indigo-600 uppercase tracking-widest">Comptes utilisateurs &amp; Autorisations</p>
+                <p class="text-xs font-black text-indigo-600 uppercase tracking-widest">Comptes utilisateurs &amp;
+                    Autorisations</p>
                 <div class="space-y-3" id="usersPermList"><!-- Rempli dynamiquement --></div>
                 <div class="pt-4 border-t border-slate-100">
-                    <p class="text-[10px] text-slate-400 font-bold">Les comptes créés ici sont enregistrés dans l'onglet "Users" de Google Sheets.</p>
+                    <p class="text-[10px] text-slate-400 font-bold">Les comptes créés ici sont enregistrés dans l'onglet
+                        "Users" de Google Sheets.</p>
                 </div>
             </div>
             <div class="p-6 bg-slate-50">
-                <button onclick="savePermissions()" class="w-full bg-blue-600 text-white py-3 rounded-xl text-xs font-black uppercase shadow-lg">Enregistrer &amp; Fermer</button>
+                <button onclick="savePermissions()"
+                    class="w-full bg-blue-600 text-white py-3 rounded-xl text-xs font-black uppercase shadow-lg">Enregistrer
+                    &amp; Fermer</button>
             </div>
         </div>
     </div>
 
 
     <!-- Modal -->
-    <div id="modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="modal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-slate-100">
                 <h3 id="modalTitle" class="text-lg font-black text-slate-900 uppercase">Ajouter un Modèle</h3>
@@ -265,30 +550,37 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Constructeur</label>
-                        <input type="text" id="m_marque" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                        <input type="text" id="m_marque"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Modèle</label>
-                        <input type="text" id="m_modele" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                        <input type="text" id="m_modele"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Année / MEC</label>
-                        <input type="text" id="m_annee" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                        <input type="text" id="m_annee"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">N° Châssis</label>
-                        <input type="text" id="m_chassis" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                        <input type="text" id="m_chassis"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Type de Glace</label>
-                        <select id="m_type" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
-                            <optgroup label="BRIS (Bris de Glace)">
+                        <select id="m_type"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                            <optgroup label="BDG (Bris de Glace)">
                                 <option value="PARE-BRISE">PARE-BRISE</option>
                                 <option value="LUNETTE ARRIÈRE">LUNETTE ARRIÈRE</option>
+                                <option value="LUNETTE">LUNETTE</option>
+                                <option value="ARRIÈRE">ARRIÈRE</option>
                                 <option value="CUSTODE">CUSTODE</option>
                                 <option value="VITRE A.D">VITRE A.D</option>
                                 <option value="VITRE A.G">VITRE A.G</option>
@@ -305,7 +597,8 @@
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Catégorie BRIS</label>
-                        <select id="m_categorie" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
+                        <select id="m_categorie"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                             <option value="">(Non spécifié)</option>
                             <option value="ORIGINE">ORIGINE</option>
                             <option value="ADAPTABLE">ADAPTABLE</option>
@@ -315,17 +608,21 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Prix Local (DH)</label>
-                        <input type="number" id="m_local" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-blue-500/20 outline-none">
+                        <input type="number" id="m_local"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-blue-500/20 outline-none">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-black text-indigo-600 uppercase">Prix Europe (DH)</label>
-                        <input type="number" id="m_euro" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none">
+                        <input type="number" id="m_euro"
+                            class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-none">
                     </div>
                 </div>
             </div>
             <div class="p-6 bg-slate-50 flex gap-3">
-                <button onclick="saveItem()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-xs font-black uppercase">Enregistrer</button>
-                <button onclick="closeModal()" class="px-6 bg-white border border-slate-200 text-slate-600 py-3 rounded-xl text-xs font-black uppercase">Annuler</button>
+                <button onclick="saveItem()"
+                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-xs font-black uppercase">Enregistrer</button>
+                <button onclick="closeModal()"
+                    class="px-6 bg-white border border-slate-200 text-slate-600 py-3 rounded-xl text-xs font-black uppercase">Annuler</button>
             </div>
         </div>
     </div>
@@ -334,7 +631,7 @@
         // ─── GESTION DES RÔLES ET PERMISSIONS VIA GOOGLE SHEETS ─────────
         let isAdmin = false;
         let userCanManage = false;
-        let dbUsers = []; 
+        let dbUsers = [];
         let currentUser = "";
 
         // Sauvegarde de secours s'il n'y a pas internet
@@ -353,24 +650,24 @@
             // 2. Pré-remplir si "Se souvenir de moi"
             try {
                 const sv = JSON.parse(localStorage.getItem('zm_remember'));
-                if(sv && sv.user) {
+                if (sv && sv.user) {
                     document.getElementById('loginUser').value = sv.user;
                     document.getElementById('loginPass').value = sv.pass;
                     document.getElementById('rememberMe').checked = true;
                 }
-            } catch(e){}
+            } catch (e) { }
 
             // 3. RAFRAÎCHISSEMENT SILENCIEUX en arrière-plan (sans bloquer le bouton)
             const secureUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec?token=BETCAM_SECRET_9X&action=getUsers";
             fetch(secureUrl)
                 .then(res => res.json())
                 .then(users => {
-                    if(Array.isArray(users) && users.length > 0) {
+                    if (Array.isArray(users) && users.length > 0) {
                         dbUsers = users;
                         localStorage.setItem("zm_users_fb", JSON.stringify(dbUsers));
                     }
                 })
-                .catch(() => {}); // Silencieux si pas de réseau
+                .catch(() => { }); // Silencieux si pas de réseau
         }
 
         // Charger les utilisateurs dès l'ouverture
@@ -390,22 +687,22 @@
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
             };
-            
+
             // COMPTE ADMINISTRATEUR
-            if(user === "BETCAM" && pass.toUpperCase() === "EXPERT2026") {
+            if (user === "BETCAM" && pass.toUpperCase() === "EXPERT2026") {
                 isAdmin = true;
                 userCanManage = true;
                 currentUser = "BETCAM";
                 handleLoginSuccess();
-                
+
                 // S'assurer que les boutons admin sont visibles (corrige les bugs de déco/reco)
                 const adminBtns = document.getElementById('adminButtons');
-                if(adminBtns) adminBtns.classList.remove('hidden');
+                if (adminBtns) adminBtns.classList.remove('hidden');
                 ['.bg-emerald-600', '.bg-indigo-700', '.bg-slate-800', '.bg-rose-600'].forEach(sel => {
                     const el = document.querySelector('#adminButtons ' + sel);
                     if (el) el.classList.remove('hidden');
                 });
-                
+
                 filterData();
                 return;
             }
@@ -415,12 +712,12 @@
             if (found || dbUsers.find(u => u.id.toUpperCase() === user && u.pass.toUpperCase() === pass.toUpperCase())) {
                 const theFound = found || dbUsers.find(u => u.id.toUpperCase() === user && u.pass.toUpperCase() === pass.toUpperCase()); // Tolérance majuscules
                 isAdmin = false;
-                userCanManage = (String(theFound.add)==='true'||theFound.add===true);
+                userCanManage = (String(theFound.add) === 'true' || theFound.add === true);
                 currentUser = theFound.id.toUpperCase();
                 handleLoginSuccess();
-                
+
                 document.getElementById('adminButtons').classList.add('hidden');
-                
+
                 // Réinitialiser les boutons pour ce login
                 ['.bg-emerald-600', '.bg-indigo-700', '.bg-slate-800', '.bg-rose-600'].forEach(sel => {
                     const el = document.querySelector('#adminButtons ' + sel);
@@ -429,7 +726,7 @@
 
                 if (userCanManage || found.excel || found.pdf) {
                     document.getElementById('adminButtons').classList.remove('hidden');
-                    
+
                     // Masquer toujours le bouton "Propriétés" (seulement BETCAM)
                     const propsBtn = document.querySelector('#adminButtons .bg-indigo-700');
                     if (propsBtn) propsBtn.classList.add('hidden');
@@ -438,16 +735,16 @@
                         const addBtn = document.querySelector('#adminButtons .bg-emerald-600');
                         if (addBtn) addBtn.classList.add('hidden');
                     }
-                    if (!(String(found.excel)==='true'||found.excel===true)) {
+                    if (!(String(found.excel) === 'true' || found.excel === true)) {
                         const excelBtn = document.querySelector('#adminButtons .bg-slate-800');
                         if (excelBtn) excelBtn.classList.add('hidden');
                     }
-                    if (!(String(found.pdf)==='true'||found.pdf===true)) {
+                    if (!(String(found.pdf) === 'true' || found.pdf === true)) {
                         const pdfBtn = document.querySelector('#adminButtons .bg-rose-600');
                         if (pdfBtn) pdfBtn.classList.add('hidden');
                     }
                 }
-                
+
                 // On met à jour le tableau pour afficher (ou non) les boutons crayon/poubelle
                 filterData();
                 return;
@@ -465,10 +762,10 @@
                 // S'il n'y a pas d'utilisateur pour cet emplacement, on laisse les cases complètement vides
                 slots.push(dbUsers[i] || { id: "", pass: "", add: false, excel: false, pdf: false });
             }
-            
+
             list.innerHTML = slots.map((u, i) => `
                 <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
-                    <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Compte ${i+1}</p>
+                    <p class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Compte ${i + 1}</p>
                     <div class="grid grid-cols-2 gap-3">
                         <div class="space-y-1">
                             <label class="text-[10px] font-black text-slate-400 uppercase">Identifiant</label>
@@ -481,20 +778,20 @@
                     </div>
                     <div class="flex flex-wrap gap-4 pt-1">
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="uadd_${i}" ${String(u.add)==='true'||u.add===true ? 'checked' : ''} class="w-4 h-4 accent-emerald-600">
+                            <input type="checkbox" id="uadd_${i}" ${String(u.add) === 'true' || u.add === true ? 'checked' : ''} class="w-4 h-4 accent-emerald-600">
                             <span class="text-xs font-black text-emerald-600 uppercase">Ajouter Modèle</span>
                         </label>
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="uexcel_${i}" ${String(u.excel)==='true'||u.excel===true ? 'checked' : ''} class="w-4 h-4 accent-slate-800">
+                            <input type="checkbox" id="uexcel_${i}" ${String(u.excel) === 'true' || u.excel === true ? 'checked' : ''} class="w-4 h-4 accent-slate-800">
                             <span class="text-xs font-black text-slate-600 uppercase">Export Excel</span>
                         </label>
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="updf_${i}" ${String(u.pdf)==='true'||u.pdf===true ? 'checked' : ''} class="w-4 h-4 accent-rose-600">
+                            <input type="checkbox" id="updf_${i}" ${String(u.pdf) === 'true' || u.pdf === true ? 'checked' : ''} class="w-4 h-4 accent-rose-600">
                             <span class="text-xs font-black text-rose-500 uppercase">Export PDF</span>
                         </label>
                     </div>
                 </div>`).join('');
-                
+
             document.getElementById('propsModal').classList.remove('hidden');
         }
 
@@ -508,7 +805,7 @@
             for (let i = 0; i < 8; i++) {
                 const uId = document.getElementById('uid_' + i).value.toUpperCase().trim();
                 const uPass = document.getElementById('upass_' + i).value.trim();
-                
+
                 // Ne sauvegarder la ligne QUE si l'identifiant ET le mot de passe sont remplis
                 if (uId !== "" && uPass !== "") {
                     newUsers.push({
@@ -544,10 +841,10 @@
         function closePropsModal() {
             document.getElementById('propsModal').classList.add('hidden');
         }
-        
+
         // Permet de se connecter avec la touche Entrée
-        document.addEventListener('keypress', function(e) {
-            if(e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
                 checkLogin();
             }
         });
@@ -571,22 +868,22 @@
         function parseRows(rawData) {
             const parsePrice = v => {
                 if (!v) return 0;
-                let s = String(v).replace(/\s/g,'').replace(',','.').replace(/[^\d.]/g,'');
+                let s = String(v).replace(/\s/g, '').replace(',', '.').replace(/[^\d.]/g, '');
                 return parseFloat(s) || 0;
             };
             return rawData.filter(row => Object.keys(row).length > 2).map(row => {
                 const vals = Object.values(row);
                 return {
-                    marque:      (row.Marque      || row.MARQUE      || vals[0] || "").toString().trim().toUpperCase(),
-                    modele:      (row.Models      || row.MODELE      || row.Modele || vals[1] || "").toString().trim(),
-                    type:        (row["Type Glace"]|| row.TYPE       || row.Type   || vals[2] || "").toString().trim(),
-                    annee:       (row["Ann\u00e9e"]    || row.ANNEE     || row.annee  || "").toString().trim(),
-                    chassis:     (row["Ch\u00e2ssis"]  || row.CHASSIS   || row.chassis || "").toString().trim().toUpperCase(),
-                    categorie:   (row["Cat\u00e9gorie"]|| row.CATEGORIE || row.categorie || "").toString().trim().toUpperCase(),
-                    local:       parsePrice(row["LOCAL & AUTRE"] || row["LOCAL&AUTRE"] || row.LOCAL || row.Local || vals[vals.length-3]),
-                    euro:        parsePrice(row["Produit Europ\u00e9en"] || row["ProduitEurop\u00e9en"] || row.EUROPE || row.Europe || vals[vals.length-2]),
+                    marque: (row.Marque || row.MARQUE || vals[0] || "").toString().trim().toUpperCase(),
+                    modele: (row.Models || row.MODELE || row.Modele || vals[1] || "").toString().trim(),
+                    type: (row["Type Glace"] || row.TYPE || row.Type || vals[2] || "").toString().trim().toUpperCase(),
+                    annee: (row["Ann\u00e9e"] || row.ANNEE || row.annee || "").toString().trim(),
+                    chassis: (row["Ch\u00e2ssis"] || row.CHASSIS || row.chassis || "").toString().trim().toUpperCase(),
+                    categorie: (row["Cat\u00e9gorie"] || row.CATEGORIE || row.categorie || "").toString().trim().toUpperCase(),
+                    local: parsePrice(row["LOCAL & AUTRE"] || row["LOCAL&AUTRE"] || row.LOCAL || row.Local || vals[vals.length - 3]),
+                    euro: parsePrice(row["Produit Europ\u00e9en"] || row["ProduitEurop\u00e9en"] || row.EUROPE || row.Europe || vals[vals.length - 2]),
                     utilisateur: (row["Utilisateur"] || row.UTILISATEUR || "").toString().trim(),
-                    date:        (row["Date"] || row.DATE || "").toString().trim()
+                    date: (row["Date"] || row.DATE || "").toString().trim()
                 };
             }).filter(i => i.marque && i.modele);
         }
@@ -609,7 +906,7 @@
                             return parsed;
                         }
                     }
-                } catch(e) {}
+                } catch (e) { }
             }
             return null;
         }
@@ -623,7 +920,7 @@
                     cacheAge = Date.now() - cached.ts;
                     applyData(cached.rows);
                 }
-            } catch(e) {}
+            } catch (e) { }
 
             // ⏳ Aucun cache : afficher le message de premier chargement
             if (data.length === 0) {
@@ -633,11 +930,11 @@
                 else { document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" class="py-10 text-center text-sm font-bold text-red-500">❌ Erreur réseau. Vérifiez votre connexion.</td></tr>'; }
             } else if (cacheAge > CACHE_TTL) {
                 // Cache expiré (> 12h) : rafraîchissement en arrière-plan
-                fetchFromNetwork().then(fresh => { if(fresh) applyData(fresh); }).catch(()=>{});
+                fetchFromNetwork().then(fresh => { if (fresh) applyData(fresh); }).catch(() => { });
             } else {
                 // Cache récent : rafraîchissement silencieux sans bloquer
                 setTimeout(() => {
-                    fetchFromNetwork().then(fresh => { if(fresh) applyData(fresh); }).catch(()=>{});
+                    fetchFromNetwork().then(fresh => { if (fresh) applyData(fresh); }).catch(() => { });
                 }, 3000);
             }
         }
@@ -645,19 +942,25 @@
         function populateFilters() {
             const types = [...new Set(data.map(i => i.type))].sort();
             const brands = [...new Set(data.map(i => i.marque))].sort();
-            
+
             // Séparation en branches pour le Type de Glace
-            const bdgTypes = ["PARE-BRISE", "LUNETTE ARRI\u00c8RE", "CUSTODE", "VITRE A.D", "VITRE A.G", "VITRE AR.D", "VITRE AR.G", "LAT\u00c9RAL"];
+            const bdgTypes = ["PARE-BRISE", "LUNETTE ARRI\u00c8RE", "LUNETTE", "ARRI\u00c8RE", "CUSTODE", "VITRE A.D", "VITRE A.G", "VITRE AR.D", "VITRE AR.G", "LAT\u00c9RAL"];
             const optiqueTypes = ["OPTIQUE", "FEU ROUGE ARRI\u00c8RE", "GLACE R\u00c9TROVISEUR"];
-            
+
             const gBDG = types.filter(t => bdgTypes.includes(t.toUpperCase()));
             const gOPT = types.filter(t => optiqueTypes.includes(t.toUpperCase()));
             const gAUT = types.filter(t => !bdgTypes.includes(t.toUpperCase()) && !optiqueTypes.includes(t.toUpperCase()));
 
             const makeTypeOptions = (allLabel) => {
                 let html = `<option value="ALL">${allLabel}</option>`;
-                html += `<optgroup label="BRIS (Bris de Glace)">${bdgTypes.map(t => `<option value="${t}">${t}</option>`).join('')}</optgroup>`;
+                html += `<optgroup label="BDG (Bris de Glace)">${bdgTypes.map(t => `<option value="${t}">${t}</option>`).join('')}</optgroup>`;
                 html += `<optgroup label="OPTIQUES & ACCESSOIRES">${optiqueTypes.map(t => `<option value="${t}">${t}</option>`).join('')}</optgroup>`;
+
+                // On rajoute dynamiquement les types qui ne sont pas dans les listes standards
+                const otherTypes = types.filter(t => !bdgTypes.includes(t.toUpperCase()) && !optiqueTypes.includes(t.toUpperCase()));
+                if (otherTypes.length > 0) {
+                    html += `<optgroup label="AUTRES">${otherTypes.map(t => `<option value="${t}">${t.toUpperCase()}</option>`).join('')}</optgroup>`;
+                }
                 return html;
             };
 
@@ -665,14 +968,14 @@
             const brandOpts = '<option value="ALL">TOUTES LES MARQUES</option>' + brands.map(b => `<option value="${b}">${b}</option>`).join('');
             const typeOptsMobile = makeTypeOptions("TOUS");
             const brandOptsMobile = '<option value="ALL">TOUTES</option>' + brands.map(b => `<option value="${b}">${b}</option>`).join('');
-            
+
             document.getElementById('typeFilter').innerHTML = typeOpts;
             document.getElementById('brandFilter').innerHTML = brandOpts;
-            
+
             const tm = document.getElementById('typeFilter_m');
             const bm = document.getElementById('brandFilter_m');
-            if(tm) tm.innerHTML = typeOptsMobile;
-            if(bm) bm.innerHTML = brandOptsMobile;
+            if (tm) tm.innerHTML = typeOptsMobile;
+            if (bm) bm.innerHTML = brandOptsMobile;
         }
 
         function filterData() {
@@ -682,10 +985,10 @@
             const categorie = document.getElementById('categorieFilter').value;
 
             const filtered = data.filter(item => {
-                const matchSearch = item.marque.toLowerCase().includes(search) || item.modele.toLowerCase().includes(search) || (item.chassis||'').toLowerCase().includes(search);
+                const matchSearch = item.marque.toLowerCase().includes(search) || item.modele.toLowerCase().includes(search) || (item.chassis || '').toLowerCase().includes(search);
                 const matchType = type === "ALL" || item.type === type;
                 const matchBrand = brand === "ALL" || item.marque === brand;
-                const matchCat = categorie === "ALL" || (item.categorie||'').toUpperCase() === categorie;
+                const matchCat = categorie === "ALL" || (item.categorie || '').toUpperCase() === categorie;
                 return matchSearch && matchType && matchBrand && matchCat;
             });
 
@@ -696,8 +999,8 @@
 
         // Palette de couleurs esthétiques pour les cartes mobile
         const CARD_COLORS = [
-            '#3b82f6','#6366f1','#8b5cf6','#ec4899','#14b8a6',
-            '#f59e0b','#10b981','#ef4444','#0ea5e9','#a855f7'
+            '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#14b8a6',
+            '#f59e0b', '#10b981', '#ef4444', '#0ea5e9', '#a855f7'
         ];
 
         function renderTable(items) {
@@ -726,10 +1029,10 @@
                         <span class="text-[10px] font-bold text-slate-500 font-mono">${item.chassis || '-'}</span>
                     </td>
                     <td class="px-6 py-4 text-right" data-label="Local">
-                        <span class="text-sm font-black text-slate-700">${(item.local || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        <span class="text-sm font-black text-slate-700">${(item.local || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </td>
                     <td class="px-6 py-4 text-right" data-label="Europe">
-                        <span class="text-sm font-black text-blue-600">${(item.euro || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        <span class="text-sm font-black text-blue-600">${(item.euro || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     </td>
                     <td class="px-6 py-4 text-center" data-label="Ajouté par">
                         ${item.utilisateur ? `<span class="text-[9px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-1 rounded-md uppercase tracking-widest">${item.utilisateur}</span>` : `<span class="text-[10px] text-slate-300">-</span>`}
@@ -757,7 +1060,7 @@
         function openAddModal() {
             currentEditIndex = null;
             document.getElementById('modalTitle').innerText = "Ajouter un Modèle";
-            ['m_marque','m_modele','m_annee','m_chassis','m_local','m_euro'].forEach(id => document.getElementById(id).value = "");
+            ['m_marque', 'm_modele', 'm_annee', 'm_chassis', 'm_local', 'm_euro'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('m_type').value = "PARE-BRISE";
             document.getElementById('m_categorie').value = "";
             document.getElementById('modal').classList.remove('hidden');
@@ -781,7 +1084,7 @@
         async function saveItem() {
             const today = new Date();
             const dateStr = today.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            
+
             const newItem = {
                 marque: document.getElementById('m_marque').value.toUpperCase().trim(),
                 modele: document.getElementById('m_modele').value.trim(),
@@ -795,12 +1098,12 @@
                 date: dateStr             // Date de saisie automatique
             };
 
-            if(!newItem.marque || !newItem.modele) {
+            if (!newItem.marque || !newItem.modele) {
                 alert("Veuillez remplir au moins la marque et le modèle.");
                 return;
             }
 
-            if(currentEditIndex !== null) {
+            if (currentEditIndex !== null) {
                 data[currentEditIndex] = newItem;
                 closeModal();
                 populateFilters();
@@ -821,9 +1124,9 @@
                 await fetch(scriptUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({...newItem, token: "BETCAM_SECRET_9X"})
+                    body: JSON.stringify({ ...newItem, token: "BETCAM_SECRET_9X" })
                 });
-                
+
                 // Actualise l'affichage local seulement APRES succès de Google
                 data.unshift(newItem);
                 closeModal();
@@ -839,7 +1142,7 @@
         }
 
         function deleteItem(index) {
-            if(confirm("Confirmer la suppression ?")) {
+            if (confirm("Confirmer la suppression ?")) {
                 data.splice(index, 1);
                 filterData();
                 populateFilters();
@@ -869,12 +1172,12 @@
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
+
             // Filigrane PDF
             doc.setTextColor(235, 240, 245); // Very light gray
             doc.setFontSize(80);
             doc.text("BETCAM", 105, 150, { angle: 45, align: "center" });
-            
+
             // Titre et Edition
             doc.setTextColor(0, 0, 0); // Reset to black
             doc.setFontSize(16);
@@ -885,16 +1188,16 @@
             doc.setTextColor(0, 0, 0);
 
             const tableRows = data.map(i => [
-                i.marque, 
-                i.modele, 
+                i.marque,
+                i.modele,
                 i.annee || "-",
                 i.chassis || "-",
-                i.type, 
+                i.type,
                 i.categorie || "-",
-                (i.local || 0).toFixed(2).replace('.', ','), 
+                (i.local || 0).toFixed(2).replace('.', ','),
                 (i.euro || 0).toFixed(2).replace('.', ',')
             ]);
-            
+
             doc.autoTable({
                 head: [['Marque', 'Modèle', 'Année', 'Châssis', 'Type', 'Catégorie', 'Local', 'Europe']],
                 body: tableRows,
@@ -915,4 +1218,5 @@
         init();
     </script>
 </body>
+
 </html>
