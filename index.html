@@ -335,7 +335,7 @@
                         Admin
                     </button>
                 </div>
-                <button id="btn-refresh" onclick="location.reload()"
+                <button id="btn-refresh" onclick="refreshDataAjax()"
                     title="Mettre à jour les données depuis Google Sheets"
                     class="btn-action bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100 border border-blue-200 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm transition-all ml-auto xl:ml-0">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1079,6 +1079,40 @@
             data = rows;
             populateFilters();
             filterData();
+            
+            // ACTUALISATION AUTOMATIQUE : Toutes les 5 minutes (en arrière-plan)
+            if (!window.autoRefreshTimer) {
+                window.autoRefreshTimer = setInterval(() => {
+                    // On ne rafraîchit que si l'utilisateur est connecté et qu'aucune modale n'est ouverte
+                    if (!document.getElementById('mainApp').classList.contains('hidden') && 
+                        document.getElementById('modal').classList.contains('hidden') && 
+                        document.getElementById('propsModal').classList.contains('hidden')) {
+                        refreshDataAjax();
+                    }
+                }, 5 * 60 * 1000); // 5 minutes
+            }
+        }
+
+        async function refreshDataAjax() {
+            const btn = document.getElementById('btn-refresh');
+            const originalHtml = btn.innerHTML;
+            
+            // Animation de chargement
+            btn.innerHTML = `<svg class="w-4 h-4 mr-1.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Actualisation...`;
+            btn.disabled = true;
+
+            try {
+                const parsed = await fetchFromNetwork();
+                if (parsed && parsed.length > 0) {
+                    applyData(parsed);
+                }
+            } catch (e) {
+                console.error("Erreur d'actualisation:", e);
+                alert("Impossible de mettre à jour les données.");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         }
 
         async function fetchFromNetwork() {
@@ -1231,8 +1265,21 @@
                         valA = parseInt((String(valA).match(/\d{4}$/) || [0])[0]);
                         valB = parseInt((String(valB).match(/\d{4}$/) || [0])[0]);
                     } else if (currentSortColumn === 'date') {
-                        valA = new Date(valA).getTime() || 0;
-                        valB = new Date(valB).getTime() || 0;
+                        // Gestion du format JJ/MM/AAAA HH:MM pour le tri chronologique
+                        const parseDate = s => {
+                            if (!s) return 0;
+                            const matches = s.match(/(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?/);
+                            if (matches) {
+                                // Mettre au format YYYY-MM-DDTHH:mm pour un parsing fiable
+                                const iso = `${matches[3]}-${matches[2]}-${matches[1]}T${matches[4] || '00'}:${matches[5] || '00'}:00`;
+                                const d = new Date(iso);
+                                return isNaN(d.getTime()) ? 0 : d.getTime();
+                            }
+                            const d = new Date(s);
+                            return isNaN(d.getTime()) ? 0 : d.getTime();
+                        };
+                        valA = parseDate(valA);
+                        valB = parseDate(valB);
                     } else {
                         valA = String(valA).toLowerCase();
                         valB = String(valB).toLowerCase();
