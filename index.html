@@ -211,7 +211,8 @@
                     </svg>
                 </div>
                 <p class="text-3xl font-normal text-emerald-500 mb-0.5" style="font-family: 'Pinyon Script', cursive;">
-                    <span class="text-5xl">B</span>ienvenue dans votre</p>
+                    <span class="text-5xl">B</span>ienvenue dans votre
+                </p>
                 <h2 class="text-3xl font-black text-slate-800 tracking-tight uppercase">ESPACE <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">BDG</span>
                 </h2>
@@ -268,7 +269,8 @@
                 </div>
                 <div>
                     <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight uppercase">TARIFS DES GLACES
-                        <span class="text-blue-600">ZAM</span></h1>
+                        <span class="text-blue-600">ZAM</span>
+                    </h1>
                     <div class="flex flex-col gap-1 mt-1.5 ml-0.5">
                         <span
                             class="text-[9px] font-bold text-slate-500 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded-md w-max">Base
@@ -282,7 +284,7 @@
 
             <div class="flex flex-wrap gap-2 w-full xl:w-auto justify-start xl:justify-end mt-2 xl:mt-0">
                 <div id="adminButtons" class="flex flex-wrap items-center gap-2 w-full xl:w-auto hidden">
-                    <button id="btn-add" onclick="openAddModal()"
+                    <button id="btn-add" onclick="openAddModal()" title="Ajouter un nouveau modèle"
                         class="btn-action bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg shadow-emerald-500/20 border border-emerald-600">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4">
@@ -290,7 +292,7 @@
                         </svg>
                         Nouveau
                     </button>
-                    <button id="btn-excel" onclick="exportExcel()"
+                    <button id="btn-excel" onclick="exportExcel()" title="Exporter le tableau en format Microsoft Excel"
                         class="btn-action bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm">
                         <svg class="w-4 h-4 mr-1.5 text-emerald-600" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -300,7 +302,7 @@
                         </svg>
                         Excel
                     </button>
-                    <button id="btn-pdf" onclick="exportPDF()"
+                    <button id="btn-pdf" onclick="exportPDF()" title="Générer une version PDF imprimable"
                         class="btn-action bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm">
                         <svg class="w-4 h-4 mr-1.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -309,7 +311,19 @@
                         </svg>
                         PDF
                     </button>
+                    <button id="btn-backup" onclick="exportBackup()"
+                        title="Sauvegarder l'intégralité du serveur (Fichier de Restauration JSON)"
+                        class="btn-action bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-amber-300 hover:bg-amber-50 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm hidden">
+                        <svg class="w-4 h-4 mr-1.5 text-amber-500" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                            </path>
+                        </svg>
+                        Sauvegarder
+                    </button>
                     <button id="btn-props" onclick="openPropsModal()"
+                        title="Paramètres et Autorisations des Utilisateurs"
                         class="btn-action bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg shadow-slate-800/20">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -321,6 +335,23 @@
                         Admin
                     </button>
                 </div>
+                <button id="btn-refresh" onclick="location.reload()"
+                    title="Mettre à jour les données depuis Google Sheets"
+                    class="btn-action bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100 border border-blue-200 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm transition-all ml-auto xl:ml-0">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Actualiser
+                </button>
+                <button id="btn-logout" onclick="logout()" title="Se déconnecter et changer de compte"
+                    class="btn-action bg-slate-100 text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-sm transition-all xl:ml-2">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Quitter
+                </button>
             </div>
         </div>
 
@@ -431,7 +462,8 @@
                         <option value="ORIGINE">ORIGINE</option>
                         <option value="ADAPTABLE">ADAPTABLE</option>
                     </select>
-                    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-lg flex items-center justify-center border border-indigo-400/30 shadow-md">
+                    <div
+                        class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-lg flex items-center justify-center border border-indigo-400/30 shadow-md">
                         <span id="countLabel_m" class="text-[10px] font-black text-white">0 RÉSULTATS</span>
                     </div>
                 </div>
@@ -446,35 +478,100 @@
                     <thead
                         class="bg-slate-50/95 backdrop-blur-md sticky top-0 z-20 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
                         <tr>
-                            <th class="px-6 py-4 border-b border-slate-200"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Véhicule</span>
+                            <th class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition w-[100px] lg:w-[130px]"
+                                onclick="sortData('marque')" title="Trier par Marque et Modèle">
+                                <span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-start gap-1">Véhicule
+                                    <svg id="sort-marque" class="w-3 h-3 flex-shrink-0 text-slate-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg></span>
                             </th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Type</span>
+                            <th class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition text-center"
+                                onclick="sortData('categorie')" title="Trier par Catégorie (Ordre Alphabétique)">
+                                <span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1">Catégorie
+                                    <svg id="sort-categorie" class="w-3 h-3 flex-shrink-0 text-slate-300 leading-none"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg></span>
                             </th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Catégorie</span>
+                            <th class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition text-center"
+                                onclick="sortData('type')" title="Trier par Type de Glace">
+                                <span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1">Type
+                                    <svg id="sort-type" class="w-3 h-3 flex-shrink-0 text-slate-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg></span>
                             </th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Année</span>
+                            <th class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition text-center"
+                                onclick="sortData('annee')" title="Trier par Année de Véhicule">
+                                <span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1">Année
+                                    <svg id="sort-annee" class="w-3 h-3 flex-shrink-0 text-slate-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg></span>
                             </th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Châssis</span>
+                            <th class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition text-center"
+                                onclick="sortData('chassis')" title="Trier par Code Châssis">
+                                <span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1">Châssis
+                                    <svg id="sort-chassis" class="w-3 h-3 flex-shrink-0 text-slate-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg></span>
                             </th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-right"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Tarif
-                                    Local</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-right"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Tarif
-                                    BETCAM</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Ajouté
-                                    Par</span></th>
-                            <th class="px-6 py-4 border-b border-slate-200 text-center"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Date
-                                    Saisie</span></th>
-                            <th id="actionsHeader" class="px-6 py-4 border-b border-slate-200 text-center"><span
-                                    class="text-[10px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">Actions</span>
+                            <th class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition text-right"
+                                onclick="sortData('local')" title="Trier par Tarif Local (Moins cher / Plus cher)">
+                                <span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-end gap-1">Tarif
+                                    Local <svg id="sort-local" class="w-3 h-3 flex-shrink-0 text-slate-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg></span>
+                            </th>
+                            <th class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition text-right"
+                                onclick="sortData('euro')" title="Trier par Tarif BETCAM (Moins cher / Plus cher)">
+                                <span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-end gap-1">Tarif
+                                    BETCAM <svg id="sort-euro" class="w-3 h-3 flex-shrink-0 text-slate-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg></span>
+                            </th>
+                            <th class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition text-center"
+                                onclick="sortData('utilisateur')" title="Trier par Auteur de l'ajout">
+                                <span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1">Utilisateur
+                                    <svg id="sort-utilisateur" class="w-3 h-3 flex-shrink-0 text-slate-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg></span>
+                            </th>
+                            <th class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 cursor-pointer hover:bg-slate-100 transition text-center"
+                                onclick="sortData('date')"
+                                title="Trier par Date de Saisies (Plus récent / Plus ancien)">
+                                <span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1">Date
+                                    Saisie <svg id="sort-date" class="w-3 h-3 flex-shrink-0 text-slate-300" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg></span>
+                            </th>
+                            <th id="actionsHeader"
+                                class="px-2 py-3 lg:px-3 lg:py-4 border-b border-slate-200 text-center"><span
+                                    class="text-[9px] lg:text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</span>
                             </th>
                         </tr>
                     </thead>
@@ -549,7 +646,7 @@
             <div class="p-6 space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
-                        <label class="text-[10px] font-black text-indigo-600 uppercase">Constructeur</label>
+                        <label class="text-[10px] font-black text-indigo-600 uppercase">Véhicule</label>
                         <input type="text" id="m_marque"
                             class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold uppercase focus:ring-2 focus:ring-blue-500/20 bg-slate-50 outline-none">
                     </div>
@@ -619,10 +716,18 @@
                 </div>
             </div>
             <div class="p-6 bg-slate-50 flex gap-3">
-                <button onclick="saveItem()"
-                    class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-xs font-black uppercase">Enregistrer</button>
-                <button onclick="closeModal()"
-                    class="px-6 bg-white border border-slate-200 text-slate-600 py-3 rounded-xl text-xs font-black uppercase">Annuler</button>
+                <button onclick="saveItem()" title="Sauvegarder les modifications et synchroniser avec Google Sheets"
+                    class="flex-1 flex justify-center items-center gap-2 bg-blue-600 text-white py-3 rounded-xl text-xs font-black uppercase hover:bg-blue-700 transition shadow-md shadow-blue-500/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Enregistrer
+                </button>
+                <button onclick="closeModal()" title="Fermer la fenêtre sans rien sauvegarder"
+                    class="px-6 bg-white border border-slate-200 text-slate-600 py-3 rounded-xl text-xs font-black uppercase hover:bg-slate-50 transition">Annuler</button>
             </div>
         </div>
     </div>
@@ -647,18 +752,29 @@
             // 1. CHARGEMENT INSTANTANÉ depuis le cache local
             dbUsers = loadUsersFallback();
 
-            // 2. Pré-remplir si "Se souvenir de moi"
+            // 2. Vérifier sessionStorage pour maintenir la connexion (Auto-Login F5)
             try {
-                const sv = JSON.parse(localStorage.getItem('zm_remember'));
-                if (sv && sv.user) {
-                    document.getElementById('loginUser').value = sv.user;
-                    document.getElementById('loginPass').value = sv.pass;
-                    document.getElementById('rememberMe').checked = true;
+                const sessionStr = sessionStorage.getItem('zm_session');
+                if (sessionStr) {
+                    const session = JSON.parse(sessionStr);
+                    if (session && session.user) {
+                        document.getElementById('loginUser').value = session.user;
+                        document.getElementById('loginPass').value = session.pass;
+                        checkLogin(true); // Force le login silencieux
+                    }
+                } else {
+                    // Pré-remplir si "Se souvenir de moi" (sans auto-login)
+                    const sv = JSON.parse(localStorage.getItem('zm_remember'));
+                    if (sv && sv.user) {
+                        document.getElementById('loginUser').value = sv.user;
+                        document.getElementById('loginPass').value = sv.pass;
+                        document.getElementById('rememberMe').checked = true;
+                    }
                 }
             } catch (e) { }
 
             // 3. RAFRAÎCHISSEMENT SILENCIEUX en arrière-plan (sans bloquer le bouton)
-            const secureUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec?token=BETCAM_SECRET_9X&action=getUsers";
+            const secureUrl = "https://script.google.com/macros/s/AKfycbybE89Lk5hRiafM5kD_DFlDSdNoZfkCMIYFjUk4BbbMmTxd4Ye32jg4XH9TxtVYTuYZtA/exec?token=BETCAM_SECRET_9X&action=getUsers";
             fetch(secureUrl)
                 .then(res => res.json())
                 .then(users => {
@@ -673,12 +789,44 @@
         // Charger les utilisateurs dès l'ouverture
         initUsers();
 
-        function checkLogin() {
+        let loginAttempts = 0;
+        let loginBlockedUntil = 0;
+        let inactivityTimer;
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (!document.getElementById('loginScreen').classList.contains('hidden')) return;
+            inactivityTimer = setTimeout(() => {
+                alert("🔒 Session expirée pour cause d'inactivité (15 minutes). Par mesure de sécurité, vous avez été déconnecté.");
+                logout();
+            }, 15 * 60 * 1000);
+        }
+
+        ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'].forEach(evt =>
+            document.addEventListener(evt, resetInactivityTimer, { passive: true })
+        );
+
+        // ─── PROTECTION ANTI-INSPECTION (Sécurité Client) ──────────────
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+            }
+        });
+
+        function checkLogin(isAutoLogin = false) {
+            const now = Date.now();
+            if (now < loginBlockedUntil) {
+                const remaining = Math.ceil((loginBlockedUntil - now) / 1000);
+                alert(`⚠️ Sécurité : Trop de tentatives échouées. Veuillez patienter ${remaining} secondes.`);
+                return;
+            }
             const user = document.getElementById('loginUser').value.toUpperCase().trim();
             const pass = document.getElementById('loginPass').value.trim(); // Mot de passe respecte la casse initialement (ou uppercase si vous préférez)
             const remChecked = document.getElementById('rememberMe').checked;
 
             const handleLoginSuccess = () => {
+                sessionStorage.setItem('zm_session', JSON.stringify({ user, pass }));
                 if (remChecked) {
                     localStorage.setItem('zm_remember', JSON.stringify({ user, pass }));
                 } else {
@@ -686,6 +834,8 @@
                 }
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
+                resetInactivityTimer();
+                loginAttempts = 0;
             };
 
             // COMPTE ADMINISTRATEUR BETCAM
@@ -698,7 +848,7 @@
                 // Afficher tous les contrôles pour l'admin principal
                 const adminBtns = document.getElementById('adminButtons');
                 if (adminBtns) adminBtns.classList.remove('hidden');
-                ['btn-add', 'btn-excel', 'btn-pdf', 'btn-props'].forEach(id => {
+                ['btn-add', 'btn-excel', 'btn-pdf', 'btn-backup', 'btn-props'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.remove('hidden');
                 });
@@ -709,18 +859,26 @@
 
             // COMPTES UTILISATEURS (Depuis Google Sheets)
             const foundUser = dbUsers.find(u => u.id.toUpperCase() === user && (u.pass === pass || u.pass.toUpperCase() === pass.toUpperCase()));
-            
+
             if (foundUser) {
                 isAdmin = false;
                 userCanManage = (String(foundUser.add) === 'true' || foundUser.add === true);
                 currentUser = foundUser.id.toUpperCase();
                 handleLoginSuccess();
 
+                // NOTIFICATION SILENCIEUSE À L'ADMINISTRATEUR (Seulement lors de la saisie manuelle)
+                if (!isAutoLogin) {
+                    try {
+                        const notifUrl = "https://script.google.com/macros/s/AKfycbybE89Lk5hRiafM5kD_DFlDSdNoZfkCMIYFjUk4BbbMmTxd4Ye32jg4XH9TxtVYTuYZtA/exec";
+                        fetch(`${notifUrl}?token=BETCAM_SECRET_9X&action=notifyAdmin&user=${encodeURIComponent(currentUser)}&time=${encodeURIComponent(new Date().toLocaleString('fr-FR'))}`, { mode: 'no-cors' });
+                    } catch (e) { }
+                }
+
                 // Gestion précise des boutons par ID
                 const adminBtns = document.getElementById('adminButtons');
                 if (adminBtns) {
                     adminBtns.classList.remove('hidden');
-                    
+
                     // 1. Toujours masquer "Admin" (Propriétés) pour TOUS les utilisateurs sauf BETCAM
                     const propsBtn = document.getElementById('btn-props');
                     if (propsBtn) propsBtn.classList.add('hidden');
@@ -740,6 +898,10 @@
                     const isPdfAllowed = (String(foundUser.pdf) === 'true' || foundUser.pdf === true);
                     if (pdfBtn) pdfBtn.classList.toggle('hidden', !isPdfAllowed);
 
+                    // 5. Sauvegarde : Toujours caché pour les utilisateurs
+                    const backupBtn = document.getElementById('btn-backup');
+                    if (backupBtn) backupBtn.classList.add('hidden');
+
                     // Si absolument rien n'est autorisé, on cache le container complet
                     if (!isAddAllowed && !isExcelAllowed && !isPdfAllowed) {
                         adminBtns.classList.add('hidden');
@@ -750,7 +912,32 @@
                 return;
             }
 
-            document.getElementById('loginError').classList.remove('hidden');
+            if (!isAutoLogin) {
+                document.getElementById('loginError').classList.remove('hidden');
+                loginAttempts++;
+                if (loginAttempts >= 3) {
+                    loginBlockedUntil = Date.now() + 30000; // Bloqué pour 30s
+                    loginAttempts = 0;
+                    document.getElementById('loginError').classList.add('hidden');
+                    alert("🚨 Alerte de Sécurité : 3 tentatives échouées. Votre accès est bloqué pendant 30 secondes. L'administrateur a été notifié.");
+
+                    try {
+                        const notifUrl = "https://script.google.com/macros/s/AKfycbybE89Lk5hRiafM5kD_DFlDSdNoZfkCMIYFjUk4BbbMmTxd4Ye32jg4XH9TxtVYTuYZtA/exec";
+                        // Notification sous format "VIOLATION: nom_tapé"
+                        fetch(`${notifUrl}?token=BETCAM_SECRET_9X&action=notifyAdmin&user=${encodeURIComponent('VIOLATION (' + user + ')')}&time=${encodeURIComponent(new Date().toLocaleString('fr-FR'))}`, { mode: 'no-cors' });
+                    } catch (e) { }
+                }
+            }
+        }
+
+        // ─── DECONNEXION ───────────────────────────────────────────────
+        function logout() {
+            // Effacer la session active et le "Se souvenir de moi" éventuel
+            sessionStorage.removeItem('zm_session');
+            localStorage.removeItem('zm_remember');
+
+            // Recharger purement et simplement la page pour tout réinitialiser
+            location.reload();
         }
 
         // ─── MODAL PROPRIÉTÉS ──────────────────────────────────────────
@@ -874,16 +1061,16 @@
             return rawData.filter(row => Object.keys(row).length > 2).map(row => {
                 const vals = Object.values(row);
                 return {
-                    marque: (row.Marque || row.MARQUE || vals[0] || "").toString().trim().toUpperCase(),
-                    modele: (row.Models || row.MODELE || row.Modele || vals[1] || "").toString().trim(),
-                    type: (row["Type Glace"] || row.TYPE || row.Type || vals[2] || "").toString().trim().toUpperCase(),
-                    annee: (row["Ann\u00e9e"] || row.ANNEE || row.annee || "").toString().trim(),
-                    chassis: (row["Ch\u00e2ssis"] || row.CHASSIS || row.chassis || "").toString().trim().toUpperCase(),
-                    categorie: (row["Cat\u00e9gorie"] || row.CATEGORIE || row.categorie || "").toString().trim().toUpperCase(),
-                    local: parsePrice(row["LOCAL & AUTRE"] || row["LOCAL&AUTRE"] || row.LOCAL || row.Local || vals[vals.length - 3]),
-                    euro: parsePrice(row["Produit Europ\u00e9en"] || row["ProduitEurop\u00e9en"] || row.BETCAM || row.BETCAM || vals[vals.length - 2]),
-                    utilisateur: (row["Utilisateur"] || row.UTILISATEUR || "").toString().trim(),
-                    date: (row["Date"] || row.DATE || "").toString().trim()
+                    marque: (row["Marque"] || row.Marque || row.MARQUE || vals[0] || "").toString().trim().toUpperCase(),
+                    modele: (row["Models"] || row.Models || row.MODELE || row.Modele || vals[1] || "").toString().trim(),
+                    categorie: (row["Catégorie"] || row["Cat\u00e9gorie"] || row.CATEGORIE || row.categorie || vals[2] || "").toString().trim().toUpperCase(),
+                    type: (row["Type de Glace"] || row["Type Glace"] || row.TYPE || row.Type || vals[3] || "").toString().trim().toUpperCase(),
+                    annee: (row["Année"] || row["Ann\u00e9e"] || row.ANNEE || row.annee || vals[4] || "").toString().trim(),
+                    chassis: (row["Châssis"] || row["Ch\u00e2ssis"] || row.CHASSIS || row.chassis || vals[5] || "").toString().trim().toUpperCase(),
+                    local: parsePrice(row["Tarif Local"] || row["LOCAL & AUTRE"] || row.LOCAL || row.Local || vals[8]),
+                    euro: parsePrice(row["Tarif Betcam"] || row["Produit Européen"] || row["ProduitEurop\u00e9en"] || row.BETCAM || row.BETCAM || vals[9]),
+                    utilisateur: (row["Ajouté Par"] || row["Ajout\u00e9 Par"] || row["Utilisateur"] || row.UTILISATEUR || vals[10] || "").toString().trim(),
+                    date: (row["Date Saisie"] || row["Date"] || row.DATE || vals[11] || "").toString().trim()
                 };
             }).filter(i => i.marque && i.modele);
         }
@@ -978,6 +1165,42 @@
             if (bm) bm.innerHTML = brandOptsMobile;
         }
 
+        let currentSortColumn = null;
+        let currentSortDirection = 'asc'; // 'asc' ou 'desc'
+
+        function sortData(column) {
+            if (currentSortColumn === column) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortColumn = column;
+                currentSortDirection = 'asc';
+            }
+            updateSortIcons();
+            filterData();
+        }
+
+        function updateSortIcons() {
+            const cols = ['marque', 'categorie', 'type', 'annee', 'chassis', 'local', 'euro', 'utilisateur', 'date'];
+            cols.forEach(col => {
+                const icon = document.getElementById(`sort-${col}`);
+                if (icon) {
+                    if (currentSortColumn === col) {
+                        icon.classList.add('text-blue-600');
+                        icon.classList.remove('text-slate-300');
+                        if (currentSortDirection === 'asc') {
+                            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>';
+                        } else {
+                            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>';
+                        }
+                    } else {
+                        icon.classList.remove('text-blue-600');
+                        icon.classList.add('text-slate-300');
+                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>';
+                    }
+                }
+            });
+        }
+
         function filterData() {
             const search = document.getElementById('search').value.toLowerCase();
             const type = document.getElementById('typeFilter').value;
@@ -992,6 +1215,35 @@
                 return matchSearch && matchType && matchBrand && matchCat;
             });
 
+            // Application du Tri
+            if (currentSortColumn) {
+                filtered.sort((a, b) => {
+                    let valA = a[currentSortColumn];
+                    let valB = b[currentSortColumn];
+
+                    if (valA === undefined || valA === null) valA = "";
+                    if (valB === undefined || valB === null) valB = "";
+
+                    if (currentSortColumn === 'local' || currentSortColumn === 'euro') {
+                        valA = Number(valA) || 0;
+                        valB = Number(valB) || 0;
+                    } else if (currentSortColumn === 'annee') {
+                        valA = parseInt((String(valA).match(/\d{4}$/) || [0])[0]);
+                        valB = parseInt((String(valB).match(/\d{4}$/) || [0])[0]);
+                    } else if (currentSortColumn === 'date') {
+                        valA = new Date(valA).getTime() || 0;
+                        valB = new Date(valB).getTime() || 0;
+                    } else {
+                        valA = String(valA).toLowerCase();
+                        valB = String(valB).toLowerCase();
+                    }
+
+                    if (valA < valB) return currentSortDirection === 'asc' ? -1 : 1;
+                    if (valA > valB) return currentSortDirection === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
             renderTable(filtered);
             const countText = `${filtered.length} ${filtered.length > 1 ? 'RÉSULTATS' : 'RÉSULTAT'}`;
             if (document.getElementById('countLabel')) document.getElementById('countLabel').innerText = countText;
@@ -999,11 +1251,72 @@
             document.getElementById('noData').classList.toggle('hidden', filtered.length > 0);
         }
 
-        // Palette de couleurs esthétiques pour les cartes mobile
         const CARD_COLORS = [
             '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#14b8a6',
             '#f59e0b', '#10b981', '#ef4444', '#0ea5e9', '#a855f7'
         ];
+
+        const USER_COLORS = [
+            'bg-emerald-50 text-emerald-600 border-emerald-100',
+            'bg-purple-50 text-purple-600 border-purple-100',
+            'bg-amber-50 text-amber-600 border-amber-100',
+            'bg-pink-50 text-pink-600 border-pink-100',
+            'bg-cyan-50 text-cyan-600 border-cyan-100',
+            'bg-orange-50 text-orange-600 border-orange-100',
+            'bg-indigo-50 text-indigo-600 border-indigo-100',
+            'bg-fuchsia-50 text-fuchsia-600 border-fuchsia-100',
+            'bg-teal-50 text-teal-600 border-teal-100',
+            'bg-sky-50 text-sky-600 border-sky-100'
+        ];
+
+        function getUserColor(username) {
+            if (!username) return 'bg-slate-50 text-slate-400 border-slate-100';
+            const upper = username.toUpperCase().trim();
+            if (upper === 'BETCAM') return 'bg-rose-50 text-rose-600 border-rose-100';
+            if (upper === 'AUTO') return 'bg-slate-100 text-slate-500 border-slate-200';
+
+            let hash = 0;
+            for (let i = 0; i < upper.length; i++) hash = upper.charCodeAt(i) + ((hash << 5) - hash);
+            return USER_COLORS[Math.abs(hash) % USER_COLORS.length];
+        }
+
+        // Formate une date système Google en 'AAAA' ou 'JJ/MM/AAAA'
+        function formatSimpleDate(val) {
+            if (!val) return "-";
+            const s = val.toString().trim();
+            // Si c'est déjà du JJ/MM/AAAA ou juste AAAA, on retourne tel quel
+            if (/^(\d{2}\/\d{2}\/\d{4}|\d{4})$/.test(s)) return s;
+
+            const d = new Date(s);
+            if (!isNaN(d.getTime())) {
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+
+                return `${day}/${month}/${year}`;
+            }
+            return s;
+        }
+
+        // Formate une date système en JJ/MM/AAAA HH:MM (Format 24H00)
+        function formatDateTime(val) {
+            if (!val) return "-";
+            const s = val.toString().trim();
+            // Si c'est déjà du JJ/MM/AAAA... on le garde
+            if (/^\d{2}\/\d{2}\/\d{4}/.test(s)) return s;
+
+            const d = new Date(s);
+            if (!isNaN(d.getTime())) {
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                const h = String(d.getHours()).padStart(2, '0');
+                const m = String(d.getMinutes()).padStart(2, '0');
+
+                return `${day}/${month}/${year} ${h}:${m}`;
+            }
+            return s;
+        }
 
         function renderTable(items) {
             const tbody = document.getElementById('tableBody');
@@ -1012,43 +1325,45 @@
                 const cardColor = CARD_COLORS[index % CARD_COLORS.length];
                 return `
                 <tr class="hover:bg-blue-50/40 transition-colors duration-200 group border-l-4" style="border-left-color:${cardColor}">
-                    <td class="px-6 py-4" data-label="Véhicule">
-                        <div class="flex flex-col">
-                            <span class="text-[13px] font-extrabold text-slate-800 group-hover:text-blue-700 transition-colors">${item.marque}</span>
-                            <span class="text-[11px] font-black text-rose-500 uppercase tracking-wide mt-0.5">${item.modele}</span>
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 w-[100px] lg:w-[130px]" data-label="Véhicule">
+                        <div class="flex flex-col w-full break-words whitespace-normal">
+                            <span class="text-xs bg:text-[13px] font-extrabold text-slate-800 group-hover:text-blue-700 transition-colors leading-tight">${item.marque}</span>
+                            <span class="text-[10px] bg:text-[11px] font-black text-rose-500 uppercase tracking-wide mt-0.5 leading-tight">${item.modele}</span>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-center" data-label="Type">
-                        <span class="inline-flex items-center px-2.5 py-1 bg-slate-100 text-[9px] font-black uppercase tracking-widest text-slate-600 rounded border border-slate-200/60">${item.type || '-'}</span>
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 text-center" data-label="Catégorie">
+                        ${item.categorie ? `<span class="inline-flex items-center px-1.5 py-0.5 lg:px-2.5 lg:py-1 bg-indigo-50 text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-indigo-600 rounded border border-indigo-100 break-words leading-tight max-w-[80px]">${item.categorie}</span>` : `<span class="text-[10px] text-slate-300">-</span>`}
                     </td>
-                    <td class="px-6 py-4 text-center" data-label="Catégorie">
-                        ${item.categorie ? `<span class="inline-flex items-center px-2.5 py-1 bg-indigo-50 text-[9px] font-black uppercase tracking-widest text-indigo-600 rounded border border-indigo-100">${item.categorie}</span>` : `<span class="text-[10px] text-slate-300">-</span>`}
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 text-center" data-label="Type">
+                        <span class="inline-flex items-center px-1.5 py-0.5 lg:px-2.5 lg:py-1 bg-slate-100 text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-slate-600 rounded border border-slate-200/60 break-words leading-tight max-w-[100px]">${item.type || '-'}</span>
                     </td>
-                    <td class="px-6 py-4 text-center" data-label="Année">
-                        <span class="text-[11px] font-bold text-slate-600">${item.annee || '-'}</span>
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 text-center" data-label="Année">
+                        <span class="text-[10px] lg:text-[11px] font-bold text-slate-600">${formatSimpleDate(item.annee)}</span>
                     </td>
-                    <td class="px-6 py-4 text-center" data-label="Châssis">
-                        <span class="text-[10px] font-bold text-slate-500 font-mono">${item.chassis || '-'}</span>
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 text-center" data-label="Châssis">
+                        <span class="text-[9px] lg:text-[10px] font-bold text-slate-500 font-mono break-all">${item.chassis || '-'}</span>
                     </td>
-                    <td class="px-6 py-4 text-right" data-label="Local">
-                        <span class="text-sm font-black text-slate-700">${(item.local || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 text-right whitespace-nowrap" data-label="Local">
+                        ${item.local ? `<span class="text-xs lg:text-sm font-black text-blue-600">${item.local.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>` : ''}
                     </td>
-                    <td class="px-6 py-4 text-right" data-label="BETCAM">
-                        <span class="text-sm font-black text-blue-600">${(item.euro || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 text-right whitespace-nowrap" data-label="BETCAM">
+                        ${item.euro ? `<span class="text-xs lg:text-sm font-black text-red-600">${item.euro.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>` : ''}
                     </td>
-                    <td class="px-6 py-4 text-center" data-label="Ajouté par">
-                        ${item.utilisateur ? `<span class="text-[9px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-1 rounded-md uppercase tracking-widest">${item.utilisateur}</span>` : `<span class="text-[10px] text-slate-300">-</span>`}
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 text-center" data-label="Utilisateur">
+                        ${item.utilisateur ? `<span class="text-[8px] lg:text-[9px] font-bold ${getUserColor(item.utilisateur)} border px-1 py-1 lg:px-2 lg:py-1 rounded-md uppercase tracking-widest text-center inline-block min-w-[50px] w-full break-words max-w-[80px]">${item.utilisateur}</span>` : `<span class="text-[10px] text-slate-300">-</span>`}
                     </td>
-                    <td class="px-6 py-4 text-center" data-label="Date">
-                        <span class="text-[10px] font-bold text-slate-500">${item.date || '-'}</span>
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 text-center" data-label="Date Saisie">
+                        <span class="text-[9px] lg:text-[10px] font-bold text-slate-500 leading-tight w-14 inline-block">${formatDateTime(item.date).replace(" ", "<br/>")}</span>
                     </td>
-                    <td class="px-6 py-4 text-center" data-label="Actions">
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 text-center" data-label="Actions">
                         ${userCanManage ? `
-                        <div class="flex justify-center gap-2">
-                            <button onclick="editItem(${originalIndex})" class="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-blue-600 hover:text-white transition-all">
+                        <div class="flex justify-center gap-1.5 lg:gap-2">
+                            <button onclick="editItem(${originalIndex})" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="Modifier">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                             </button>
-                            <button onclick="deleteItem(${originalIndex})" class="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-red-600 hover:text-white transition-all">
+                            <button ${isAdmin ? `onclick="deleteItem(${originalIndex})"` : 'disabled'} 
+                                class="p-2 rounded-lg transition-all ${isAdmin ? 'bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white cursor-pointer' : 'bg-slate-50 text-slate-300 cursor-not-allowed'}" 
+                                title="${isAdmin ? 'Supprimer' : 'Suppression réservée à l\'administrateur'}">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </button>
                         </div>` : ''}
@@ -1074,7 +1389,9 @@
             document.getElementById('modalTitle').innerText = "Modifier le Modèle";
             document.getElementById('m_marque').value = item.marque;
             document.getElementById('m_modele').value = item.modele;
-            document.getElementById('m_annee').value = item.annee || "";
+
+            const formattedAnnee = formatSimpleDate(item.annee);
+            document.getElementById('m_annee').value = formattedAnnee === "-" ? "" : formattedAnnee;
             document.getElementById('m_chassis').value = item.chassis || "";
             document.getElementById('m_type').value = item.type;
             document.getElementById('m_categorie').value = item.categorie || "";
@@ -1085,12 +1402,40 @@
 
         async function saveItem() {
             const today = new Date();
-            const dateStr = today.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const d = String(today.getDate()).padStart(2, '0');
+            const mo = String(today.getMonth() + 1).padStart(2, '0');
+            const y = today.getFullYear();
+            const h = String(today.getHours()).padStart(2, '0');
+            const mi = String(today.getMinutes()).padStart(2, '0');
+            const s = String(today.getSeconds()).padStart(2, '0');
+            const dateStr = `${d}/${mo}/${y} ${h}:${mi}:${s}`;
+
+            const valMarque = document.getElementById('m_marque').value.toUpperCase().trim();
+            const valModele = document.getElementById('m_modele').value.trim();
+            const valAnnee = document.getElementById('m_annee').value.trim();
+
+            if (!valMarque || !valModele) {
+                alert("Veuillez remplir au moins la marque et le modèle.");
+                return;
+            }
+
+            // Validation stricte de l'année
+            if (valAnnee !== "") {
+                const dateRegex = /^(\d{4}|\d{2}\/\d{2}\/\d{4})$/;
+                if (!dateRegex.test(valAnnee)) {
+                    alert("⚠️ Format invalide pour l'Année.\nVeuillez utiliser l'un des formats suivants :\n- AAAA (ex: 2024)\n- JJ/MM/AAAA (ex: 15/05/2024)");
+
+                    const inputAnnee = document.getElementById('m_annee');
+                    inputAnnee.classList.add('border-rose-500', 'bg-rose-50');
+                    setTimeout(() => inputAnnee.classList.remove('border-rose-500', 'bg-rose-50'), 2500);
+                    return;
+                }
+            }
 
             const newItem = {
-                marque: document.getElementById('m_marque').value.toUpperCase().trim(),
-                modele: document.getElementById('m_modele').value.trim(),
-                annee: document.getElementById('m_annee').value.trim(),
+                marque: valMarque,
+                modele: valModele,
+                annee: valAnnee,
                 chassis: document.getElementById('m_chassis').value.toUpperCase().trim(),
                 type: document.getElementById('m_type').value,
                 categorie: document.getElementById('m_categorie').value,
@@ -1105,13 +1450,23 @@
                 return;
             }
 
-            if (currentEditIndex !== null) {
-                data[currentEditIndex] = newItem;
-                closeModal();
-                populateFilters();
-                filterData();
-                return;
-            }
+            // Préparation des données pour l'API Google Apps Script (Ordre et noms exacts)
+            const apiPayload = {
+                "Marque": newItem.marque,
+                "Models": newItem.modele,
+                "Catégorie": newItem.categorie,
+                "Type de Glace": newItem.type,
+                "Année": newItem.annee,
+                "Châssis": newItem.chassis,
+                "Détail Glace": newItem.modele,
+                "Tarif Local": newItem.local,
+                "Tarif Betcam": newItem.euro,
+                "Ajouté Par": newItem.utilisateur,
+                "Date Saisie": newItem.date,
+                "token": "BETCAM_SECRET_9X",
+                "action": currentEditIndex !== null ? "editItem" : "addItem",
+                "rowIndex": currentEditIndex !== null ? (currentEditIndex + 2) : undefined
+            };
 
             // Récupère le bouton pour indiquer le chargement
             const saveBtn = document.querySelector('#modal button.bg-blue-600');
@@ -1119,18 +1474,23 @@
             saveBtn.innerText = "ENREGISTREMENT...";
             saveBtn.disabled = true;
 
-            const scriptUrl = "https://script.google.com/macros/s/AKfycbzvI9vPFrFtF7-NBnh2hkLagWQgcxCs5kSm-bqnZYjCn81jgDUIeLUC7js18ARQlRX2og/exec";
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbybE89Lk5hRiafM5kD_DFlDSdNoZfkCMIYFjUk4BbbMmTxd4Ye32jg4XH9TxtVYTuYZtA/exec";
 
             try {
                 // Utilisation de text/plain pour éviter le blocage CORS
                 await fetch(scriptUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ ...newItem, token: "BETCAM_SECRET_9X" })
+                    body: JSON.stringify(apiPayload)
                 });
 
-                // Actualise l'affichage local seulement APRES succès de Google
-                data.unshift(newItem);
+                // Actualise l'affichage local
+                if (currentEditIndex !== null) {
+                    data[currentEditIndex] = newItem;
+                } else {
+                    data.unshift(newItem);
+                }
+
                 closeModal();
                 populateFilters();
                 filterData();
@@ -1164,11 +1524,22 @@
                 "Catégorie BDG": i.categorie || "",
                 "Tarif Local (DH)": i.local,
                 "Tarif BETCAM (DH)": i.euro,
-                "Ajouté Par": i.utilisateur || ""
+                "Utilisateur": i.utilisateur || ""
             })));
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Tarifs_ZAM");
             XLSX.writeFile(wb, "Tarifs_Des_Glaces_ZAM.xlsx");
+        }
+
+        function exportBackup() {
+            if (data.length === 0) return alert("Aucune donnée à sauvegarder.");
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `Sauvegarde_Tarifs_ZAM_${new Date().toISOString().slice(0, 10)}.json`);
+            document.body.appendChild(dlAnchorElem);
+            dlAnchorElem.click();
+            document.body.removeChild(dlAnchorElem);
         }
 
         function exportPDF() {
