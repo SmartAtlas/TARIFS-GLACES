@@ -1079,13 +1079,13 @@
             data = rows;
             populateFilters();
             filterData();
-            
+
             // ACTUALISATION AUTOMATIQUE : Toutes les 5 minutes (en arrière-plan)
             if (!window.autoRefreshTimer) {
                 window.autoRefreshTimer = setInterval(() => {
                     // On ne rafraîchit que si l'utilisateur est connecté et qu'aucune modale n'est ouverte
-                    if (!document.getElementById('mainApp').classList.contains('hidden') && 
-                        document.getElementById('modal').classList.contains('hidden') && 
+                    if (!document.getElementById('mainApp').classList.contains('hidden') &&
+                        document.getElementById('modal').classList.contains('hidden') &&
                         document.getElementById('propsModal').classList.contains('hidden')) {
                         refreshDataAjax();
                     }
@@ -1096,7 +1096,7 @@
         async function refreshDataAjax() {
             const btn = document.getElementById('btn-refresh');
             const originalHtml = btn.innerHTML;
-            
+
             // Animation de chargement
             btn.innerHTML = `<svg class="w-4 h-4 mr-1.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Actualisation...`;
             btn.disabled = true;
@@ -1372,10 +1372,10 @@
                 const cardColor = CARD_COLORS[index % CARD_COLORS.length];
                 return `
                 <tr class="hover:bg-blue-50/40 transition-colors duration-200 group border-l-4" style="border-left-color:${cardColor}">
-                    <td class="px-2 py-3 lg:px-3 lg:py-4 w-[100px] lg:w-[130px]" data-label="Véhicule">
+                    <td class="px-2 py-3 lg:px-3 lg:py-4 lg:w-[130px]" data-label="Véhicule">
                         <div class="flex flex-col w-full break-words whitespace-normal">
-                            <span class="text-xs bg:text-[13px] font-extrabold text-slate-800 group-hover:text-blue-700 transition-colors leading-tight">${item.marque}</span>
-                            <span class="text-[10px] bg:text-[11px] font-black text-rose-500 uppercase tracking-wide mt-0.5 leading-tight">${item.modele}</span>
+                            <span class="text-xs lg:text-[13px] font-extrabold text-slate-800 group-hover:text-blue-700 transition-colors leading-tight">${item.marque}</span>
+                            <span class="text-[10px] lg:text-[11px] font-black text-rose-500 uppercase tracking-wide mt-0.5 leading-tight">${item.modele}</span>
                         </div>
                     </td>
                     <td class="px-2 py-3 lg:px-3 lg:py-4 text-center" data-label="Catégorie">
